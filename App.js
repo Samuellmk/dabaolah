@@ -19,3 +19,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+
+// help me
