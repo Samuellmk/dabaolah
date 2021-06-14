@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
 });
 
 
-// help me
+// help me Tasha is so lame 
