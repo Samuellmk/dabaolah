@@ -19,3 +19,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// i sked help
+// samuel is rude
