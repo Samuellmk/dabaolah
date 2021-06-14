@@ -19,5 +19,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-// Tasha is sooo lame
