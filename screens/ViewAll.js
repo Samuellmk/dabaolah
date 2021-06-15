@@ -5,32 +5,42 @@ import { Text, View, StyleSheet, Image } from 'react-native';
 import Constants from 'expo-constants';
 // import { Card } from 'react-native-paper';
 
+// DEBUG TO DO:
+// 1. DEBUG ANIMATION OF SKELETON LOADING??
+
+// TO DO:
+// 1. combine 'big words' with pics to be 'newly added'
+// 2. combine 'some other words here' with pics to be descriptions and walking times
+
+
 const firstLayout = [
   {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 250,
+    height: 140,
+    borderRadius: 20,
+    marginRight: 20,
+    marginTop: 20,
   },
-  {
-    flexDirection: 'column',
-    marginRight: 10,
-    children: [
-      {
-        width: "100%",
-        height: "50%",
-        marginBottom: 10
-      },
-      {
-        width: "50%",
-        height: "20%",
-        marginBottom: 10
-      },
-      {
-        width: 100,
-        height: 20
-      }
-    ]
-  },
+  // {
+  //   flexDirection: 'column',
+  //   marginRight: 10,
+  //   children: [
+  //     {
+  //       width: "100%",
+  //       height: "50%",
+  //       marginBottom: 10
+  //     },
+  //     {
+  //       width: "50%",
+  //       height: "20%",
+  //       marginBottom: 10
+  //     },
+  //     {
+  //       width: 100,
+  //       height: 20
+  //     }
+  //   ]
+  // },
 ];
 const secondLayout = [
   {
@@ -38,10 +48,10 @@ const secondLayout = [
     height: "20%",
     marginBottom: 20,
   },
-  {
-    width: "100%",
-    height: 60,
-  }
+  // {
+  //   width: "100%",
+  //   height: 60,
+  // }
 ];
 const thirdLayout = [
   {
@@ -55,12 +65,13 @@ const thirdLayout = [
   },
 ];
 
-const INTERVAL_REFRESH = 3000;
+const INTERVAL_REFRESH = 2000;
 
 
 export default function() {
     const [isLoading, setIsLoading] = useState(true);
   
+    // should load only after db fetches data?
     useEffect(() => {
         if(!isLoading){
            const timeoutId = setTimeout(() => setIsLoading(true), INTERVAL_REFRESH);
@@ -76,9 +87,20 @@ export default function() {
         <View style={styles.container}>
           {/* <Card style={styles.card}> */}
             <SkeletonContent
+              containerStyle={styles.titleContainer}
+              layout={secondLayout}
+              isLoading={isLoading}>
+              <Text style={styles.bigText}>big words</Text>
+              {/* <Text style={[styles.normalText, { marginTop: 20}]}>
+                words below big words
+              </Text> */}
+            </SkeletonContent>
+            
+            <SkeletonContent
               containerStyle={styles.top}
               layout={firstLayout}
-              isLoading={isLoading}>
+              isLoading={isLoading}
+              >
               <View style = {imageContainerStyle.imageContainer}>
                 <View style = {imageContainerStyle.rowContainer}>
                   {/* <View style={styles.imageContainer}> */}
@@ -108,16 +130,6 @@ export default function() {
                   <Text style={styles.normalText}>Nested 2</Text>
                   <Text style={styles.normalText}>Nested 3</Text>
               </View> */}
-            </SkeletonContent>
-  
-            <SkeletonContent
-              containerStyle={styles.titleContainer}
-              layout={secondLayout}
-              isLoading={isLoading}>
-              <Text style={styles.bigText}>big words</Text>
-              <Text style={[styles.normalText, { marginTop: 20}]}>
-                words below big words
-              </Text>
             </SkeletonContent>
   
             <SkeletonContent
