@@ -1,16 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect, Component } from "react";
-import { Text, View, StyleSheet, Image, SectionList } from "react-native";
 import SkeletonContent from "react-native-skeleton-content";
+import React, { useState, useEffect, Component } from "react";
+import { Text, View, StyleSheet, Image } from "react-native";
 import Constants from "expo-constants";
 // import { Card } from 'react-native-paper';
-
-// DEBUG TO DO:
-// 1. DEBUG ANIMATION OF SKELETON LOADING??
-
-// TO DO:
-// 1. combine 'big words' with pics to be 'newly added'
-// 2. combine 'some other words here' with pics to be descriptions and walking times
 
 
 const firstLayout = [
@@ -21,26 +14,6 @@ const firstLayout = [
     marginRight: 20,
     marginTop: 20,
   },
-  // {
-  //   flexDirection: 'column',
-  //   marginRight: 10,
-  //   children: [
-  //     {
-  //       width: "100%",
-  //       height: "50%",
-  //       marginBottom: 10
-  //     },
-  //     {
-  //       width: "50%",
-  //       height: "20%",
-  //       marginBottom: 10
-  //     },
-  //     {
-  //       width: 100,
-  //       height: 20
-  //     }
-  //   ]
-  // },
 ];
 const secondLayout = [
   {
