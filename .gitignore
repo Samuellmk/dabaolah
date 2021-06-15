@@ -13,3 +13,7 @@ web-build/
 .DS_Store
 
 database
+cuisineData.json
+locationData.json
+serviceAccountKey.json
+storeData.json
