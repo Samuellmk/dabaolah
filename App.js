@@ -8,6 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import NearMe from "./screens/NearMe";
 import ViewAll from "./screens/ViewAll";
 import Saved from "./screens/Saved";
+import Settings from "./screens/Settings";
 
 import { Entypo } from "@expo/vector-icons";
 
@@ -28,6 +29,8 @@ export default function App() {
               iconName = "grid";
             } else if (route.name === "Saved") {
               iconName = "box";
+            } else if (route.name === "Settings") {
+              iconName = "cog";
             }
 
             // You can return any component that you like here!
@@ -42,6 +45,7 @@ export default function App() {
         <Tab.Screen name="NearMe" component={NearMe} />
         <Tab.Screen name="ViewAll" component={ViewAll} />
         <Tab.Screen name="Saved" component={Saved} />
+        <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
     </NavigationContainer>
   );
