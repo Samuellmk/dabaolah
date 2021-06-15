@@ -1,9 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import SkeletonContent from 'react-native-skeleton-content';
-import React, { useState, useEffect , Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import Constants from 'expo-constants';
-// import { Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 
 const firstLayout = [
   {
@@ -57,10 +57,10 @@ const thirdLayout = [
 
 const INTERVAL_REFRESH = 3000;
 
-
 export default function() {
     const [isLoading, setIsLoading] = useState(true);
   
+    // only for demo purposes
     useEffect(() => {
         if(!isLoading){
            const timeoutId = setTimeout(() => setIsLoading(true), INTERVAL_REFRESH);
@@ -74,49 +74,31 @@ export default function() {
   
       return (
         <View style={styles.container}>
-          {/* <Card style={styles.card}> */}
+          <Card style={styles.card}>
             <SkeletonContent
               containerStyle={styles.top}
               layout={firstLayout}
               isLoading={isLoading}>
-              <View style = {imageContainerStyle.imageContainer}>
-                <View style = {imageContainerStyle.rowContainer}>
-                  {/* <View style={styles.imageContainer}> */}
-                    <Image
-                      source={require('./193756610_10225806831827515_3314437409129576622_n.jpg')}
-                      style={styles.image}
-                    />
-                  {/* </View> */}
-                  {/* <View style={styles.imageContainer}> */}
-                    <Image
-                      source={require('./193756610_10225806831827515_3314437409129576622_n.jpg')}
-                      style={styles.image}
-                    />
-                  {/* </View> */}
-                    <Image
-                        source={require('./193756610_10225806831827515_3314437409129576622_n.jpg')}
-                        style={styles.image}
-                      />
-                    <Image
-                      source={require('./193756610_10225806831827515_3314437409129576622_n.jpg')}
-                      style={styles.image}
-                    />
-                </View>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{uri:"https://en.meming.world/images/en/thumb/2/2c/Surprised_Pikachu_HD.jpg/300px-Surprised_Pikachu_HD.jpg"}}
+                  style={styles.image}
+                />
               </View>
-              {/* <View style={styles.nested}>
+              <View style={styles.nested}>
                   <Text style={styles.normalText}>Nested 1</Text>
                   <Text style={styles.normalText}>Nested 2</Text>
                   <Text style={styles.normalText}>Nested 3</Text>
-              </View> */}
+              </View>
             </SkeletonContent>
   
             <SkeletonContent
               containerStyle={styles.titleContainer}
               layout={secondLayout}
               isLoading={isLoading}>
-              <Text style={styles.bigText}>big words</Text>
+              <Text style={styles.bigText}>Benjamin Franklin</Text>
               <Text style={[styles.normalText, { marginTop: 20}]}>
-                words below big words
+                An investment in knowledge pays the best interest.
               </Text>
             </SkeletonContent>
   
@@ -125,10 +107,10 @@ export default function() {
               containerStyle={styles.descContainer}
               isLoading={isLoading}>
               <Text style={styles.normalText}>
-                some other words here
+                “It is easier to prevent bad habits than to break them.“
               </Text>
             </SkeletonContent>
-          {/* </Card> */}
+          </Card>
         </View>
       );
     }
@@ -144,10 +126,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   image: {
-    resizeMode: 'contain', // i honestly dk what this does
-    width: 50,
-    height: 90,
-    padding: 60, //why is this resizing the images??? NANI???????!?!?!?!!
+    resizeMode: 'contain',
+    height: 36,
   },
   titleContainer: {
     width: 300,
@@ -168,26 +148,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
   },
-  normalText: {
-    fontSize: 18,
-  },
-  bigText: {
-    fontWeight: 'bold',
-    fontSize: 28,
-  },
-  // card: {
-  //   height: 400,
-  //   width: 300,
-  //   borderRadius: 10,
-  //   backgroundColor: '#fff',
-  // },
-  // nested: {
-  //   flexDirection: 'column',
-  //   marginRight: 20
-  // }
-});
-
-const imageContainerStyle = StyleSheet.create({
   imageContainer: {
     width: 60,
     height: 60,
@@ -195,9 +155,22 @@ const imageContainerStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rowContainer: {
-    flexDirection: "row",
-    // flex: 1,
+  normalText: {
+    fontSize: 18,
   },
-})
+  bigText: {
+    fontWeight: 'bold',
+    fontSize: 28,
+  },
+  card: {
+    height: 400,
+    width: 300,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+  },
+  nested: {
+    flexDirection: 'column',
+    marginRight: 20
+  }
+});
 
