@@ -299,6 +299,7 @@ const filterList = [
 export default () => {
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
+  const [cuisines, setCuisines] = useState([])
 
   async function retrieveData() {
     localDB.transaction((tx) => {
@@ -310,13 +311,20 @@ export default () => {
       );
     });
 
-    const unsubscribe = firebase.firestore().collection('stores').onSnapshot((collection) => {
+    const retrieveStalls = firebase.firestore().collection('stores').onSnapshot((collection) => {
       const stalls = collection.docs.map((doc) => doc.data());
       setStallsInfo(stalls);
     });
+    const retrieveCuisines = firebase.firestore().collection('cuisines').onSnapshot((collection) => {
+      const cuis = collection.docs.map((doc) => doc.data());
+      setCuisines(cuis);
+    })
+
     return () => {
-      unsubscribe();
+      retrieveStalls();
+      retrieveCuisines();
     };
+
   };
 
   useEffect(() => {
@@ -330,8 +338,41 @@ export default () => {
     }, null, retrieveData);
   }, []);
 
+
+  var sectionData = [...SECTIONS];
+  for (var section1 of sectionData) {
+    for (var cuisineObj of cuisines) {
+      if (section1.status === "New") {
+        section1.data = stallsInfo.filter((stall) => {
+          return stall.location > 12;
+        });
+        break;
+      }
+      else if (section1.status === "Our Picks") {
+        section1.data = stallsInfo.filter((stall) => {
+          return stall.location === 1 ||
+                 stall.location === 10 ||
+                 stall.location === 3 ||
+                 stall.location === 7 ||
+                 stall.location === 8
+        });
+        break;
+      }
+      else if (section1.status === cuisineObj.cuisine) {
+        var cuisineNum = 1 + cuisines.findIndex((stallCuisine) => {
+          return stallCuisine === cuisineObj;
+        });
+        section1.data = stallsInfo.filter((stall) => {
+          return stall.cuisine === cuisineNum;
+        });
+        break;
+      };
+    };
+  };
+  console.log(cuisines[0]);
+
   const [filterStatus, setFilterStatus] = useState("All")
-  const [dataList, setDataList] = useState(SECTIONS)
+  const [dataList, setDataList] = useState(sectionData)
   
   const setFilterStatusFunc = filterStatus => {
     if(filterStatus !== "All") {   // Chinese or Halal
@@ -376,7 +417,7 @@ export default () => {
               <Text style={styles.sectionHeader}>{section.title}</Text>
               <FlatList
                 horizontal
-                data={stallsInfo}
+                data={section.data}
                 renderItem={({ item }) => <ListItem item={item} />}
                 keyExtractor={(item) => item.storeName}
                 showsHorizontalScrollIndicator={false}
@@ -406,14 +447,14 @@ const SECTIONS = [
     data: [
       {
         key: '1',
-        text: 'Xiang Xiang Taiwanese Cuisine',
+        storeName: 'Xiang Xiang Taiwanese Cuisine',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: './sample_pic.jpg', // this doesn't work... (like when i input item.uri as a variable into the image source)
       },
       {
         key: '2',
-        text: 'Item text 2',
+        storeName: 'Item text 2',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: 'https://picsum.photos/id/10/200',
@@ -421,21 +462,21 @@ const SECTIONS = [
 
       {
         key: '3',
-        text: 'Item text 3',
+        storeName: 'Item text 3',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: 'https://picsum.photos/id/1002/200',
       },
       {
         key: '4',
-        text: 'Item text 4',
+        storeName: 'Item text 4',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: 'https://picsum.photos/id/1006/200',
       },
       {
         key: '5',
-        text: 'Item text 5',
+        storeName: 'Item text 5',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: 'https://picsum.photos/id/1008/200',
@@ -448,14 +489,14 @@ const SECTIONS = [
     data: [
       {
         key: '1',
-        text: 'Xiang Xiang Traditional Cuisine',
+        storeName: 'Xiang Xiang Traditional Cuisine',
         uri: 'https://picsum.photos/id/1011/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '2',
-        text: 'Item text 2',
+        storeName: 'Item text 2',
         uri: 'https://picsum.photos/id/1012/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -463,21 +504,21 @@ const SECTIONS = [
 
       {
         key: '3',
-        text: 'Item text 3',
+        storeName: 'Item text 3',
         uri: 'https://picsum.photos/id/1013/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '4',
-        text: 'Item text 4',
+        storeName: 'Item text 4',
         uri: 'https://picsum.photos/id/1015/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '5',
-        text: 'Item text 5',
+        storeName: 'Item text 5',
         uri: 'https://picsum.photos/id/1016/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -490,14 +531,14 @@ const SECTIONS = [
     data: [
       {
         key: '1',
-        text: 'Item text 1',
+        storeName: 'Item text 1',
         uri: 'https://picsum.photos/id/1020/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '2',
-        text: 'Item text 2',
+        storeName: 'Item text 2',
         uri: 'https://picsum.photos/id/1024/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -505,21 +546,21 @@ const SECTIONS = [
 
       {
         key: '3',
-        text: 'Item text 3',
+        storeName: 'Item text 3',
         uri: 'https://picsum.photos/id/1027/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '4',
-        text: 'Item text 4',
+        storeName: 'Item text 4',
         uri: 'https://picsum.photos/id/1035/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '5',
-        text: 'Item text 5',
+        storeName: 'Item text 5',
         uri: 'https://picsum.photos/id/1038/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -532,14 +573,14 @@ const SECTIONS = [
     data: [
       {
         key: '1',
-        text: 'Item text 1',
+        storeName: 'Item text 1',
         uri: 'https://picsum.photos/id/1020/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '2',
-        text: 'Item text 2',
+        storeName: 'Item text 2',
         uri: 'https://picsum.photos/id/1024/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -547,21 +588,21 @@ const SECTIONS = [
 
       {
         key: '3',
-        text: 'Item text 3',
+        storeName: 'Item text 3',
         uri: 'https://picsum.photos/id/1027/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '4',
-        text: 'Item text 4',
+        storeName: 'Item text 4',
         uri: 'https://picsum.photos/id/1035/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
       },
       {
         key: '5',
-        text: 'Item text 5',
+        storeName: 'Item text 5',
         uri: 'https://picsum.photos/id/1038/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -598,6 +639,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     borderRadius: 10,
+    // marginLeft: 75,
   },
   filterBtn: {
     width: Dimensions.get('window').width / 5,
