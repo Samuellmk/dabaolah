@@ -37,10 +37,9 @@ export default function App() {
               iconName = focused ? "location" : "location-outline";
             } else if (route.name === "ViewAll") {
               iconName = focused ? "grid" : "grid-outline";
-            }
-            // else if (route.name === "Saved") {
-            //   iconName = focused ? "bookmark" : "bookmark-outline";
-            else if (route.name === "Settings") {
+            } else if (route.name === "Saved") {
+              iconName = focused ? "bookmark" : "bookmark-outline";
+            } else if (route.name === "Settings") {
               iconName = focused ? "cog" : "cog-outline";
             }
 
@@ -70,9 +69,13 @@ export default function App() {
             tabBarButton: CustomTabButton,
           }}
         />
-        {/* <Tab.Screen name="Saved" component={Saved} />     options={{
-      tabBarButton: CustomTabButton,
-    }}*/}
+        <Tab.Screen
+          name="Saved"
+          component={Saved}
+          options={{
+            tabBarButton: CustomTabButton,
+          }}
+        />
         <Tab.Screen
           name="Settings"
           component={Settings}
