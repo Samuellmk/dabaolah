@@ -69,7 +69,7 @@ export default function App() {
           },
         })}
         tabBarOptions={{
-          activeTintColor: "#fe9f33",
+          activeTintColor: "#fbaf03",
           inactiveTintColor: "gray",
           labelStyle: {
             fontSize: 12,
