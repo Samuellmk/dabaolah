@@ -7,8 +7,9 @@
 
 // // TO DO:
 // // header [DONE]
-// // bubble filters  --- npm install --save react-native-scrolling-button-menu
-// // nav tabs (incoporate back)
+// // bubble filters 
+// // color of bubble filters
+// // nav tabs (incoporate back) [DONE]
 // // button touchable opacity
 // // ... if word length exceeds container width
 // // divider don't appear below , maybe can do on top of each section then hide with header
@@ -193,11 +194,13 @@
 // });
 
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, ScrollView } from 'react-native';
+import React, { Component, useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Divider } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+import { Dimensions } from 'react-native';
+import { ListItemBase } from 'react-native-elements/dist/list/ListItemBase';
 import firebase from "../database/firestoreDB";
 import * as SQLite from "expo-sqlite"
 // import ScrollingButtonMenu from 'react-native-scrolling-button-menu';
@@ -274,6 +277,25 @@ const ListItem = ({ item }) => {
 };
 
 
+
+const filterList = [
+  {
+    status: "All"
+  },
+  {
+    status: "Chinese"
+  },
+  {
+    status: "Halal"
+  },
+  {
+    status: "Western"
+  },
+  {
+    status: "Vegetarian"
+  }
+]
+
 export default () => {
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
@@ -308,11 +330,39 @@ export default () => {
     }, null, retrieveData);
   }, []);
 
+  const [filterStatus, setFilterStatus] = useState("All")
+  const [dataList, setDataList] = useState(SECTIONS)
+  
+  const setFilterStatusFunc = filterStatus => {
+    if(filterStatus !== "All") {   // Chinese or Halal
+      setDataList([...SECTIONS.filter(e => e.status === filterStatus)])
+    }
+    else  {
+      setDataList(SECTIONS)
+    }
+    setFilterStatus(filterStatus)
+  }
+
   return (
     <>
       <View style={styles.headerStyle}>
-        <Ionicons name="chevron-back" size={24} color="black" style={styles.backArrow}/>
-        <Text style={styles.headerText}>All Hawkers</Text>
+        <View style={{flexDirection: "row"}}>
+          <Ionicons name="chevron-back" size={24} color="#fbaf03" style={styles.backArrow}/>
+          <Text style={styles.headerText}>All Hawkers</Text>
+        </View>
+        {/* <SafeAreaView style={styles.filterButtonsContainer}> */}
+          <View style={styles.filterButtonsList}>
+              {
+                filterList.map(e => (
+                  <TouchableOpacity 
+                    style={[styles.filterBtn, filterStatus === e.status && styles.filterBtnActive]}
+                    onPress={() => setFilterStatusFunc(e.status)}>
+                    <Text>{e.status}</Text>
+                  </TouchableOpacity>
+                ))
+              }
+          </View>
+        {/* </SafeAreaView> */}
       </View>
       <View style={styles.container}>
         <StatusBar style="dark" />
@@ -320,7 +370,7 @@ export default () => {
           <SectionList
             // contentContainerStyle={{ paddingHorizontal:0 }}
             stickySectionHeadersEnabled={false}
-            sections={SECTIONS}
+            sections={dataList}
             renderSectionHeader={({ section }) => (
               <>
               <Text style={styles.sectionHeader}>{section.title}</Text>
@@ -352,10 +402,11 @@ export default () => {
 const SECTIONS = [
   {
     title: 'Newly Added',
+    status: "New",
     data: [
       {
         key: '1',
-        text: 'Xiang Xiang Traditional Taiwanese Cuisine',
+        text: 'Xiang Xiang Taiwanese Cuisine',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
         uri: './sample_pic.jpg', // this doesn't work... (like when i input item.uri as a variable into the image source)
@@ -393,10 +444,11 @@ const SECTIONS = [
   },
   {
     title: 'Our Picks',
+    status: "Our Picks",
     data: [
       {
         key: '1',
-        text: 'Xiang Xiang Traditional Taiwanese Cuisine',
+        text: 'Xiang Xiang Traditional Cuisine',
         uri: 'https://picsum.photos/id/1011/200',
         walkingTime: '~ 10 mins',
         distance: '2.5 km',
@@ -433,7 +485,50 @@ const SECTIONS = [
     ],
   },
   {
+    title: 'Halal Certified',
+    status: "Halal",
+    data: [
+      {
+        key: '1',
+        text: 'Item text 1',
+        uri: 'https://picsum.photos/id/1020/200',
+        walkingTime: '~ 10 mins',
+        distance: '2.5 km',
+      },
+      {
+        key: '2',
+        text: 'Item text 2',
+        uri: 'https://picsum.photos/id/1024/200',
+        walkingTime: '~ 10 mins',
+        distance: '2.5 km',
+      },
+
+      {
+        key: '3',
+        text: 'Item text 3',
+        uri: 'https://picsum.photos/id/1027/200',
+        walkingTime: '~ 10 mins',
+        distance: '2.5 km',
+      },
+      {
+        key: '4',
+        text: 'Item text 4',
+        uri: 'https://picsum.photos/id/1035/200',
+        walkingTime: '~ 10 mins',
+        distance: '2.5 km',
+      },
+      {
+        key: '5',
+        text: 'Item text 5',
+        uri: 'https://picsum.photos/id/1038/200',
+        walkingTime: '~ 10 mins',
+        distance: '2.5 km',
+      },
+    ],
+  },
+  {
     title: 'Chinese Food',
+    status: "Chinese",
     data: [
       {
         key: '1',
@@ -478,24 +573,47 @@ const SECTIONS = [
 const styles = StyleSheet.create({
   headerStyle: {
     flex: 0.2,
-    backgroundColor:"#FE8B33", 
+    backgroundColor:"#fbaf03", 
     borderBottomRightRadius: 15, 
     borderBottomLeftRadius: 15,
-    flexDirection: "row",
+    // flexDirection: "row",
     // transform: [{ translateY: -35 }]
     // marginBottom: 10,
   },
   backArrow: {
     marginLeft: 10, 
-    marginTop: 35,
+    marginTop: 55,
     fontSize: 30,
   },
   headerText: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
-    marginTop: 35,
+    marginTop: 50,
     marginLeft: 7,
     color: "#2b2b2b"
+  },
+  filterButtonsList: {
+    flex: 0.7,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignSelf: "center",
+    borderRadius: 10,
+  },
+  filterBtn: {
+    width: Dimensions.get('window').width / 5,
+    flexDirection: 'row',
+    borderWidth: 0.5,
+    borderColor: "#d6d6d6",
+    borderRadius: 10,
+    padding: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    backgroundColor: "#ededed",
+  },
+  filterBtnActive: {
+    backgroundColor: "#ffe29c",
+    borderColor: "#c78842",
   },
   container: {
     flex: 1,
@@ -503,7 +621,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontWeight: '800',
-    fontSize: 25,
+    fontSize: 22,
     color: '#363636',
     marginTop: 20,
     marginBottom: 5,
@@ -518,6 +636,7 @@ const styles = StyleSheet.create({
   itemPhoto: {
     width: 140,
     height: 140,
+    borderRadius: 10,
   },
   itemTextContainer: {
     height: 60,
@@ -529,11 +648,12 @@ const styles = StyleSheet.create({
   itemText: {
     color: '#363636',
     marginTop: 5,
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "bold",
   },
   itemText2: {
     color: "#5c5c5c",
     marginTop: 5,
+    fontSize: 13,
   },
 });
