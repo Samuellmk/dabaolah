@@ -5,7 +5,7 @@
 // import { FlatList } from "react-native-gesture-handler";
 // import * as SQLite from "expo-sqlite"
 // import { useEffect } from "react/cjs/react.production.min";
-// import firebase from "./database/firestoreDB"
+// // import firebase from "../database/firestoreDB"
 
 // const localDB = SQLite.openDatabase("savedStalls.db")
 // const db = firebase.firestore()
@@ -14,12 +14,11 @@
 // const cuisinesRef = db.collection('cuisines')
 
 // // TODO retrieve more info from firestore using name of stall
-// // const savedStallsObj = savedStallsList.map((stall) => {
-// //   return {
-// //     name: stall,
-// //   };
-// // });
-
+// const savedStallsObj = savedStallsList.map((stall) => {
+//   return {
+//     name: stall,
+//   };
+// });
 
 // function SavedScreenLoading() {
 //   let [savedStalls, setSavedStalls] = useState([]);
@@ -28,7 +27,8 @@
 //   // put loading skeleton screen here
 
 
-//   function retrieveData() {
+//   // const async function retrieveData() {
+//   const retrieveData = async function() {
 //     db.transaction((tx) => {
 //       tx.executeSql(
 //       "SELECT * FROM savedStalls",
@@ -39,7 +39,7 @@
 //     });
     
 //     for (stall of savedStalls) {
-//       const snapshot = await stallsRef.where('storeName', '==', stall.storeName).get();
+//       const snapshot = db.collection('stores').where('storeName', '==', stall.storeName).get();
 //       if (snapshot.empty) {
 //         console.log('No matching stalls.');
 //         return;
@@ -130,12 +130,12 @@
 // }
 
 
-// stall info screen (after clicking on a stall in the list)
-// function StallInfo() {
-//   return (
-//     // TODO layout of stall info screen
-//   )
-// }
+// // stall info screen (after clicking on a stall in the list)
+// // function StallInfo() {
+// //   return (
+// //     // TODO layout of stall info screen
+// //   )
+// // }
 
 
 // const Stack = createStackNavigator;
@@ -146,7 +146,8 @@
 //     <Stack.Navigator>
 //       <Stack.Screen name='Saved Hawkers - Loading' component={SavedScreenLoading} />
 //       <Stack.Screen name='Saved Hawkers' component={SavedScreenLoaded} />
-//       <Stack.Screen name={nameOfStall(CHANGETHIS)} component={StallInfo} /> //TODO change the name of stall
+//       <Stack.Screen name={nameOfStall(CHANGETHIS)} component={StallInfo} />
+//       {/* TODO change the name of stall */}
 //     </Stack.Navigator>
 //   )
 // }

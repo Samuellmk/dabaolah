@@ -5,66 +5,116 @@ import {
   TextInput,
   View,
   Dimensions,
-  TouchableOpacity,
+  TouchableHighlight,
 } from "react-native";
 
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 
+import { Ionicons } from "@expo/vector-icons";
+
 export default function NearMe() {
   const [text, onChangeText] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState({
+    latitude: 0,
+    longitude: 0,
+    altitude: 0,
+    heading: 0,
+    speed: 0,
+  });
   const [errorMsg, setErrorMsg] = useState(null);
+  const [address, setAddress] = useState("");
+  const [currentCoords, setCurrentCoords] = useState(null);
 
-  (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  })();
-  let msg = "Waiting..";
-  if (errorMsg) {
-    msg = errorMsg;
-  } else if (location) {
-    msg = JSON.stringify(location);
-  }
+      let location = await Location.getCurrentPositionAsync();
+      setLocation(location);
 
-  console.log("My location:", msg);
+      setCurrentCoords({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+
+      console.log(location);
+      if (currentCoords !== null) {
+        const readOnlyAddress = await Location.reverseGeocodeAsync(
+          currentCoords
+        );
+        setAddress(readOnlyAddress[0]);
+        if (address.street != null) {
+          onChangeText(address.street);
+        } else {
+          onChangeText("");
+        }
+        console.log("My Street", { text });
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <MapView
         provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: 1.3551,
-          longitude: 103.6848,
+          longitude: 103.6843,
           latitudeDelta: 0,
           longitudeDelta: 0,
           zoom: 13,
         }}
+        showsUserLocation={true}
         showsMyLocationButton={true}
         customMapStyle={mapStyle}
-        style={{
-          width: Dimensions.get("window").width,
-          height: Dimensions.get("window").height - 80,
-        }}
+        style={styles.map}
+        showsIndoors={false}
+        showsBuildings={false}
+        showsIndoorLevelPicker={false}
       >
         <Marker coordinate={location.coords} />
       </MapView>
       <Callout>
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeText}
-          value={text}
-          placeholder="Enter your address"
-        />
+        <View style={styles.input}>
+          <View style={{ flex: 10 }}>
+            <TextInput
+              style={{ backgroundColor: "transparent" }}
+              onChangeText={onChangeText}
+              value={text}
+              placeholder="Enter your address"
+              clearButtonMode="while-editing"
+              dataDetectorTypes="address"
+              onSubmitEditing={() => this.myFunction()}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <TouchableHighlight
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onPress={() => {
+                this._fetchResults();
+              }}
+              underlayColor="transparent"
+            >
+              <Ionicons name="send" size={24} color="grey" />
+            </TouchableHighlight>
+          </View>
+        </View>
       </Callout>
     </View>
   );
+}
+
+function submit() {
+  console.log("Submited");
 }
 
 const styles = StyleSheet.create({
@@ -73,17 +123,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
   },
-  map: {},
+  map: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height - 80,
+  },
   input: {
+    flexDirection: "row",
     height: 50,
     width: 0.8 * Dimensions.get("window").width,
-    padding: 5,
+    alignItems: "center",
+    paddingHorizontal: 15,
     backgroundColor: "white",
     borderRadius: 10,
     marginTop: 0.1 * Dimensions.get("window").height,
     shadowColor: "rgba(0,0,0, .4)", // IOS
     shadowOffset: { height: 1, width: 1 }, // IOS
-    shadowOpacity: 0.5, // IOS
+    shadowOpacity: 1, // IOS
     shadowRadius: 1, //IOS
     fontSize: 20,
   },
