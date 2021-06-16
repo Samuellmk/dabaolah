@@ -269,7 +269,7 @@ const ListItem = ({ item }) => {
         <View style={styles.itemTextContainer2}>
           <FontAwesome5 style={{ margin: 3 }} name="walking" size={16} color="#363636" />
           {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
-          <Text style={styles.itemText2}>~10 mins ∙ 2.5km</Text>
+          <Text style={styles.itemText2}>~15 mins ∙ 1.8km</Text>
         </View>
       </View>
     </View>
@@ -299,7 +299,7 @@ export default () => {
   //shauna's db
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
-  const [cuisines, setCuisines] = useState([])
+  const [cuisines, setCuisines] = useState([]);
 
   async function retrieveData() {
     localDB.transaction((tx) => {
@@ -339,8 +339,6 @@ export default () => {
   }, []);
   //shauna's db
 
-
-
   var sectionData = [...SECTIONS];
   for (var section1 of sectionData) {
     for (var cuisineObj of cuisines) {
@@ -371,7 +369,6 @@ export default () => {
       };
     };
   };
-  console.log(cuisines[0]);
 
   const [filterStatus, setFilterStatus] = useState("All")
   const [dataList, setDataList] = useState(sectionData)
