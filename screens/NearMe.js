@@ -152,7 +152,13 @@ export default function NearMe({ route, navigation }) {
   // };
   for (var section1 of sectionData) {
     for (var cuisineObj of cuisines) {
-      if (section1.status === "Our Picks") {
+      if (section1.status === "New") {
+        section1.data = stallsInfo.filter((stall) => {
+          return stall.location < 4;
+        });
+        break;
+      }
+      else if (section1.status === "Our Picks") {
         PICK[0].data = stallsInfo.filter((stall) => {
           return stall.location === 3 ||
             stall.location === 7 ||
@@ -170,16 +176,17 @@ export default function NearMe({ route, navigation }) {
       };
     };
   };
-  sectionData.shift(); // remove "newly added"
+  // sectionData.shift(); // remove "newly added"
   sectionData.shift(); // remove "our picks"
   // remove some stalls for nearme page
   sectionData[0]['data'].shift();
   sectionData[1]['data'].shift();
-  sectionData[1]['data'].shift();
-  sectionData[1]['data'].shift();
-  sectionData[1]['data'].pop();
-  sectionData[1]['data'].pop();
-  sectionData[1]['data'].pop();
+  sectionData[2]['data'].shift();
+  sectionData[2]['data'].shift();
+  sectionData[2]['data'].shift();
+  sectionData[2]['data'].pop();
+  sectionData[2]['data'].pop();
+  sectionData[2]['data'].pop();
 
   // const featuredList =  sectionData.filter((section2) => {
   //   return section2.status === "Our Picks";
@@ -194,9 +201,9 @@ export default function NearMe({ route, navigation }) {
   const setFilterStatusFunc = (filterStatus) => {
     if (filterStatus !== "All") {
       // Chinese or Halal
-      setDataList([...SECTIONS.filter((e) => e.status === filterStatus)]);
+      setDataList([...sectionData.filter((e) => e.status === filterStatus)]);
     } else {
-      setDataList(SECTIONS);
+      setDataList(sectionData);
     }
     setFilterStatus(filterStatus);
   };
@@ -470,18 +477,16 @@ const PICK = [
   },
 ];
 
-// const PICK = [];
-
 
 const SECTIONS = [
   {
-    title: 'Newly Added',
-    status: "New",
+    title: 'Our Picks',
+    status: "Our Picks",
     data: []
   },
   {
-    title: 'Our Picks',
-    status: "Our Picks",
+    title: 'Newly Added',
+    status: "New",
     data: []
   },
   {
