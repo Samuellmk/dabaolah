@@ -10,10 +10,9 @@ import ViewAll from "./screens/ViewAll";
 import Saved from "./screens/Saved";
 import Settings from "./screens/Settings";
 
-import { Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator;
 
 export default function App() {
   return (
@@ -24,23 +23,26 @@ export default function App() {
             let iconName;
 
             if (route.name === "NearMe") {
-              iconName = focused ? "location" : "location-pin";
+              iconName = focused ? "location" : "location-outline";
             } else if (route.name === "ViewAll") {
-              iconName = "grid";
-            } 
+              iconName = focused ? "grid" : "grid-outline";
+            }
             // else if (route.name === "Saved") {
-            //   iconName = "box";} 
+            //   iconName = focused ? "bookmark" : "bookmark-outline";
             else if (route.name === "Settings") {
-              iconName = "cog";
+              iconName = focused ? "cog" : "cog-outline";
             }
 
             // You can return any component that you like here!
-            return <Entypo name={iconName} size={size} color={color} />;
+            return <Ionicons name={iconName} size={size} color={color} />;
           },
         })}
         tabBarOptions={{
           activeTintColor: "tomato",
           inactiveTintColor: "gray",
+          labelStyle: {
+            fontSize: 12,
+          },
         }}
       >
         <Tab.Screen name="NearMe" component={NearMe} />
