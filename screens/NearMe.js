@@ -70,13 +70,22 @@ const filterList = [
   },
 ];
 
+const END = {
+  latitude: 1.35, //1.3551
+  longitude: 103.68, //103.6843
+};
+const haversine = require("haversine");
+
 export default function NearMe({ route, navigation }) {
-  const { text } = route.params;
+  const { text, currentCoords } = route.params;
 
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
   const [cuisines, setCuisines] = useState([]);
+  const [locations, setLocations] = useState([]);
 
+  console.log("distance: ", haversine(currentCoords, END));
+  console.log(locations[9]);
   async function retrieveData() {
     localDB.transaction((tx) => {
       tx.executeSql(
@@ -101,10 +110,18 @@ export default function NearMe({ route, navigation }) {
         const cuis = collection.docs.map((doc) => doc.data());
         setCuisines(cuis);
       });
+    const retrieveLocations = firebase
+      .firestore()
+      .collection("locations")
+      .onSnapshot((collection) => {
+        const cuis = collection.docs.map((doc) => doc.data());
+        setLocations(cuis);
+      });
 
     return () => {
       retrieveStalls();
       retrieveCuisines();
+      retrieveLocations();
     };
   }
 
@@ -201,6 +218,8 @@ export default function NearMe({ route, navigation }) {
   //   PICK = [...PICK, featured];
   // }
 
+  // Location Stuff
+
   const [filterStatus, setFilterStatus] = useState("All");
   const [dataList, setDataList] = useState(sectionData);
 
@@ -252,7 +271,9 @@ export default function NearMe({ route, navigation }) {
         <View style={{ flex: 1 }}>
           <SectionList
             // contentContainerStyle={{ paddingHorizontal:0 }}
-            ListHeaderComponent={filterStatus == "All" ? OurPick : null}
+            ListHeaderComponent={
+              filterStatus == "All" ? OurPick(currentCoords) : null
+            }
             stickySectionHeadersEnabled={false}
             sections={dataList}
             renderSectionHeader={({ section }) => (
@@ -283,7 +304,12 @@ export default function NearMe({ route, navigation }) {
   );
 }
 
-function OurPick() {
+function OurPick(currentCoords) {
+  const pickLocation = {
+    latitude: 1.3509008,
+    longitude: 103.720027,
+  };
+
   return (
     <>
       <View style={styles.containerPick}>
@@ -314,7 +340,15 @@ function OurPick() {
                 size={16}
                 color="#363636"
               />
-              <Text style={styles.itemText2}>~7 mins ∙ 0.8km</Text>
+              <Text style={styles.itemText2}>
+                ~
+                {Number(
+                  (haversine(currentCoords, pickLocation) / 5).toPrecision(2)
+                ) + " mins"}{" "}
+                ∙{" "}
+                {Number(haversine(currentCoords, pickLocation).toPrecision(2)) +
+                  " km"}
+              </Text>
               {/* <Text style={styles.itemText2}>
                 {PICK[0].data[0].walkingTime} ∙ {PICK[0].data[0].distance}
               </Text> */}
@@ -361,7 +395,7 @@ const ListItem = ({ item }) => {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    flex: 0.2,
+    flex: 0.25,
     backgroundColor: "#fbaf03",
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15,
@@ -372,8 +406,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   headerText1: {
-    flex: 0.6,
-    marginTop: 20,
+    flex: 0.5,
+    marginTop: 10,
     fontSize: 20,
     color: "#2b2b2b",
   },
@@ -448,12 +482,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   filterButtonsList: {
-    flex: 0.7,
+    flex: 0.25,
     backgroundColor: "transparent",
     flexDirection: "row",
     alignSelf: "center",
     borderRadius: 10,
     marginLeft: 65,
+    marginBottom: 15,
   },
   filterBtn: {
     width: Dimensions.get("window").width / 5,

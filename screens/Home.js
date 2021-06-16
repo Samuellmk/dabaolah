@@ -54,6 +54,7 @@ export default function Home({ navigation }) {
           onChangeText("");
         }
         console.log("My Street", { text });
+        console.log(currentCoords);
       }
     })();
   }, []);
@@ -98,7 +99,9 @@ export default function Home({ navigation }) {
                 alignItems: "center",
                 justifyContent: "center",
               }}
-              onPress={() => navigation.navigate("NearMe", { text })}
+              onPress={() =>
+                navigation.navigate("NearMe", { text, currentCoords })
+              }
               underlayColor="transparent"
             >
               <Ionicons name="send" size={24} color="grey" />
@@ -108,10 +111,6 @@ export default function Home({ navigation }) {
       </Callout>
     </View>
   );
-}
-
-function submit() {
-  console.log("Submited");
 }
 
 const styles = StyleSheet.create({

@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, Dimensions, TouchableWithoutFeedback } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Divider } from 'react-native-elements';
-import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SectionList,
+  SafeAreaView,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Divider } from "react-native-elements";
+import { Ionicons } from "@expo/vector-icons";
 import SkeletonContent from "react-native-skeleton-content";
-import { ListItemBase } from 'react-native-elements/dist/list/ListItemBase';
+import { ListItemBase } from "react-native-elements/dist/list/ListItemBase";
 import firebase from "../database/firestoreDB";
-import * as SQLite from "expo-sqlite"
+import * as SQLite from "expo-sqlite";
 
-
-const localDB = SQLite.openDatabase("savedStalls.db")
-const db = firebase.firestore()
-const stallsRef = db.collection('stores')
-const locationsRef = db.collection('locations')
-const cuisinesRef = db.collection('cuisines')
+const localDB = SQLite.openDatabase("savedStalls.db");
+const db = firebase.firestore();
+const stallsRef = db.collection("stores");
+const locationsRef = db.collection("locations");
+const cuisinesRef = db.collection("cuisines");
 
 async function retrieveData() {
   [savedStalls, setSavedStalls] = useState([]);
@@ -22,17 +32,21 @@ async function retrieveData() {
 
   localDB.transaction((tx) => {
     tx.executeSql(
-    "SELECT * FROM savedStalls",
-    null,
-    (txObj, { rows: { _array } }) => setSavedStalls(_array),
-    (txObj, error) => console.error("Error ", error)
+      "SELECT * FROM savedStalls",
+      null,
+      (txObj, { rows: { _array } }) => setSavedStalls(_array),
+      (txObj, error) => console.error("Error ", error)
     );
-    });
+  });
 
-  const unsubscribe = firebase.firestore().collection('stores').onSnapshot((collection) => {const stalls = collection.docs.map((doc) => doc.data());
+  const unsubscribe = firebase
+    .firestore()
+    .collection("stores")
+    .onSnapshot((collection) => {
+      const stalls = collection.docs.map((doc) => doc.data());
       setStallsInfo(stalls);
     });
-  
+
   // const snapshot = await stallsRef.get();
   // if (snapshot.empty) {
   //   console.log('No matching stalls.');
@@ -60,28 +74,29 @@ async function retrieveData() {
 
 const filterList = [
   {
-    status: "All"
+    status: "All",
   },
   {
-    status: "Chinese"
+    status: "Chinese",
   },
   {
-    status: "Halal"
+    status: "Halal",
   },
   {
-    status: "Western"
+    status: "Western",
   },
   {
-    status: "Vegetarian"
-  }
-]
+    status: "Vegetarian",
+  },
+];
 
 export default function ViewAll({ navigation }) {
-
   const ListItem = ({ item }) => {
     return (
-    <View style={styles.item}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate("Details")}>
+      <View style={styles.item}>
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate("Details")}
+        >
           <Image
             source={{ uri: item.picture1 }}
             style={styles.itemPhoto}
@@ -89,9 +104,16 @@ export default function ViewAll({ navigation }) {
           />
         </TouchableWithoutFeedback>
         <View style={styles.itemTextContainer}>
-          <Text style={styles.itemText} numberOfLines={2}>{item.storeName}</Text>
+          <Text style={styles.itemText} numberOfLines={2}>
+            {item.storeName}
+          </Text>
           <View style={styles.itemTextContainer2}>
-            <FontAwesome5 style={{ margin: 3 }} name="walking" size={16} color="#363636" />
+            <FontAwesome5
+              style={{ margin: 3 }}
+              name="walking"
+              size={16}
+              color="#363636"
+            />
             {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
             <Text style={styles.itemText2}>~15 mins ∙ 1.8km</Text>
           </View>
@@ -115,31 +137,40 @@ export default function ViewAll({ navigation }) {
       );
     });
 
-    const retrieveStalls = firebase.firestore().collection('stores').onSnapshot((collection) => {
-      const stalls = collection.docs.map((doc) => doc.data());
-      setStallsInfo(stalls);
-    });
-    const retrieveCuisines = firebase.firestore().collection('cuisines').onSnapshot((collection) => {
-      const cuis = collection.docs.map((doc) => doc.data());
-      setCuisines(cuis);
-    })
+    const retrieveStalls = firebase
+      .firestore()
+      .collection("stores")
+      .onSnapshot((collection) => {
+        const stalls = collection.docs.map((doc) => doc.data());
+        setStallsInfo(stalls);
+      });
+    const retrieveCuisines = firebase
+      .firestore()
+      .collection("cuisines")
+      .onSnapshot((collection) => {
+        const cuis = collection.docs.map((doc) => doc.data());
+        setCuisines(cuis);
+      });
 
     return () => {
       retrieveStalls();
       retrieveCuisines();
     };
-
-  };
+  }
 
   useEffect(() => {
-    localDB.transaction((tx) => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS
+    localDB.transaction(
+      (tx) => {
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS
         savedStalls
         (storeName TEXT PRIMARY KEY,
           location TEXT);`
-      );
-    }, null, retrieveData);
+        );
+      },
+      null,
+      retrieveData
+    );
   }, []);
   //shauna's db
 
@@ -159,7 +190,7 @@ export default function ViewAll({ navigation }) {
       marginTop: 15,
     },
     {
-      width : "70%",
+      width: "70%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -167,7 +198,7 @@ export default function ViewAll({ navigation }) {
       marginRight: 70,
     },
     {
-      width : "60%",
+      width: "60%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -175,7 +206,7 @@ export default function ViewAll({ navigation }) {
       marginRight: 110,
     },
     {
-      width : "60%",
+      width: "60%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -197,7 +228,7 @@ export default function ViewAll({ navigation }) {
       marginTop: 15,
     },
     {
-      width : "70%",
+      width: "70%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -205,7 +236,7 @@ export default function ViewAll({ navigation }) {
       marginRight: 70,
     },
     {
-      width : "60%",
+      width: "60%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -213,7 +244,7 @@ export default function ViewAll({ navigation }) {
       marginRight: 110,
     },
     {
-      width : "60%",
+      width: "60%",
       height: "2%",
       borderRadius: 15,
       marginRight: 30,
@@ -221,19 +252,18 @@ export default function ViewAll({ navigation }) {
       marginRight: 110,
       marginBottom: 90,
     },
-  ]
+  ];
 
   const [isLoading, setIsLoading] = useState(true);
   const LOAD_TIME = 2000;
 
-    // should load only after db fetches data?
-    useEffect(() => {
-        if(isLoading) {
-          const timeoutId = setTimeout(() => setIsLoading(false), LOAD_TIME);
-          return () => clearTimeout(timeoutId);
-        }
-    }, [isLoading]);
-
+  // should load only after db fetches data?
+  useEffect(() => {
+    if (isLoading) {
+      const timeoutId = setTimeout(() => setIsLoading(false), LOAD_TIME);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isLoading]);
 
   //filter button states
   var sectionData = [...SECTIONS];
@@ -244,65 +274,73 @@ export default function ViewAll({ navigation }) {
           return stall.location > 12;
         });
         break;
-      }
-      else if (section1.status === "Our Picks") {
+      } else if (section1.status === "Our Picks") {
         section1.data = stallsInfo.filter((stall) => {
-          return stall.location === 1 ||
-                 stall.location === 10 ||
-                 stall.location === 3 ||
-                 stall.location === 7 ||
-                 stall.location === 8
+          return (
+            stall.location === 1 ||
+            stall.location === 10 ||
+            stall.location === 3 ||
+            stall.location === 7 ||
+            stall.location === 8
+          );
         });
         break;
-      }
-      else if (section1.status === cuisineObj.cuisine) {
-        var cuisineNum = 1 + cuisines.findIndex((stallCuisine) => {
-          return stallCuisine === cuisineObj;
-        });
+      } else if (section1.status === cuisineObj.cuisine) {
+        var cuisineNum =
+          1 +
+          cuisines.findIndex((stallCuisine) => {
+            return stallCuisine === cuisineObj;
+          });
         section1.data = stallsInfo.filter((stall) => {
           return stall.cuisine === cuisineNum;
         });
         break;
-      };
-    };
-  };
-
-  const [filterStatus, setFilterStatus] = useState("All")
-  const [dataList, setDataList] = useState(sectionData)
-  
-  const setFilterStatusFunc = filterStatus => {
-    if(filterStatus !== "All") {   // Chinese or Halal
-      setDataList([...sectionData.filter(e => e.status === filterStatus)])
+      }
     }
-    else  {
-      setDataList(sectionData)
-    }
-    setFilterStatus(filterStatus)
   }
+
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [dataList, setDataList] = useState(sectionData);
+
+  const setFilterStatusFunc = (filterStatus) => {
+    if (filterStatus !== "All") {
+      // Chinese or Halal
+      setDataList([...sectionData.filter((e) => e.status === filterStatus)]);
+    } else {
+      setDataList(sectionData);
+    }
+    setFilterStatus(filterStatus);
+  };
 
   return (
     <>
       <View style={styles.headerStyle}>
-        <View style={{flexDirection: "row"}}>
-          <Ionicons name="chevron-back" size={24} color="#fbaf03" style={styles.backArrow}/>
+        <View style={{ flexDirection: "row" }}>
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            color="#fbaf03"
+            style={styles.backArrow}
+          />
           <Text style={styles.headerText}>All Hawkers</Text>
         </View>
         {/* <SafeAreaView style={styles.filterButtonsContainer}> */}
-          <View style={styles.filterButtonsList}>
-              {
-                filterList.map(e => (
-                  <TouchableOpacity 
-                    style={[styles.filterBtn, filterStatus === e.status && styles.filterBtnActive]}
-                    onPress={() => {
-                      setFilterStatusFunc(e.status)
-                      setIsLoading(true)
-                    }}
-                  >
-                    <Text>{e.status}</Text>
-                  </TouchableOpacity>
-                ))
-              }
-          </View>
+        <View style={styles.filterButtonsList}>
+          {filterList.map((e) => (
+            <TouchableOpacity
+              style={[
+                styles.filterBtn,
+                filterStatus === e.status && styles.filterBtnActive,
+              ]}
+              onPress={() => {
+                setFilterStatusFunc(e.status);
+                setIsLoading(true);
+              }}
+            >
+              <Text>{e.status}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         {/* </SafeAreaView> */}
       </View>
 
@@ -316,20 +354,20 @@ export default function ViewAll({ navigation }) {
               sections={dataList}
               renderSectionHeader={({ section }) => (
                 <>
-                <Text style={styles.sectionHeader}>{section.title}</Text>
-                <FlatList
-                  horizontal
-                  data={section.data}
-                  renderItem={({ item }) => <ListItem item={item} />}
-                  keyExtractor={(item) => item.storeName}
-                  showsHorizontalScrollIndicator={false}
-                />
-                <Divider 
-                  style={{marginTop: 10}}
-                  color="#ebebeb"
-                  width={7} 
-                  orientation="horizontal" 
-                />
+                  <Text style={styles.sectionHeader}>{section.title}</Text>
+                  <FlatList
+                    horizontal
+                    data={section.data}
+                    renderItem={({ item }) => <ListItem item={item} />}
+                    keyExtractor={(item) => item.storeName}
+                    showsHorizontalScrollIndicator={false}
+                  />
+                  <Divider
+                    style={{ marginTop: 10 }}
+                    color="#ebebeb"
+                    width={7}
+                    orientation="horizontal"
+                  />
                 </>
               )}
               renderItem={({ item, section }) => {
@@ -341,174 +379,174 @@ export default function ViewAll({ navigation }) {
       </SkeletonContent>
     </>
   );
-};
+}
 
 const SECTIONS = [
   {
-    title: 'Newly Added',
+    title: "Newly Added",
     status: "New",
     data: [
       {
-        key: '1',
-        storeName: 'Xiang Xiang Taiwanese Cuisine',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
-        uri: './sample_pic.jpg', // this doesn't work... (like when i input item.uri as a variable into the image source)
+        key: "1",
+        storeName: "Xiang Xiang Taiwanese Cuisine",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "./sample_pic.jpg", // this doesn't work... (like when i input item.uri as a variable into the image source)
       },
       {
-        key: '2',
-        storeName: 'Item text 2',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
-        uri: 'https://picsum.photos/id/10/200',
+        key: "2",
+        storeName: "Item text 2",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/10/200",
       },
 
       {
-        key: '3',
-        storeName: 'Item text 3',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
-        uri: 'https://picsum.photos/id/1002/200',
+        key: "3",
+        storeName: "Item text 3",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1002/200",
       },
       {
-        key: '4',
-        storeName: 'Item text 4',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
-        uri: 'https://picsum.photos/id/1006/200',
+        key: "4",
+        storeName: "Item text 4",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1006/200",
       },
       {
-        key: '5',
-        storeName: 'Item text 5',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
-        uri: 'https://picsum.photos/id/1008/200',
+        key: "5",
+        storeName: "Item text 5",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1008/200",
       },
     ],
   },
   {
-    title: 'Our Picks',
+    title: "Our Picks",
     status: "Our Picks",
     data: [
       {
-        key: '1',
-        storeName: 'Xiang Xiang Traditional Cuisine',
-        uri: 'https://picsum.photos/id/1011/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "1",
+        storeName: "Xiang Xiang Traditional Cuisine",
+        uri: "https://picsum.photos/id/1011/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '2',
-        storeName: 'Item text 2',
-        uri: 'https://picsum.photos/id/1012/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "2",
+        storeName: "Item text 2",
+        uri: "https://picsum.photos/id/1012/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
 
       {
-        key: '3',
-        storeName: 'Item text 3',
-        uri: 'https://picsum.photos/id/1013/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "3",
+        storeName: "Item text 3",
+        uri: "https://picsum.photos/id/1013/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '4',
-        storeName: 'Item text 4',
-        uri: 'https://picsum.photos/id/1015/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "4",
+        storeName: "Item text 4",
+        uri: "https://picsum.photos/id/1015/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '5',
-        storeName: 'Item text 5',
-        uri: 'https://picsum.photos/id/1016/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "5",
+        storeName: "Item text 5",
+        uri: "https://picsum.photos/id/1016/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
     ],
   },
   {
-    title: 'Halal Certified',
+    title: "Halal Certified",
     status: "Halal",
     data: [
       {
-        key: '1',
-        storeName: 'Item text 1',
-        uri: 'https://picsum.photos/id/1020/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "1",
+        storeName: "Item text 1",
+        uri: "https://picsum.photos/id/1020/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '2',
-        storeName: 'Item text 2',
-        uri: 'https://picsum.photos/id/1024/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "2",
+        storeName: "Item text 2",
+        uri: "https://picsum.photos/id/1024/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
 
       {
-        key: '3',
-        storeName: 'Item text 3',
-        uri: 'https://picsum.photos/id/1027/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "3",
+        storeName: "Item text 3",
+        uri: "https://picsum.photos/id/1027/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '4',
-        storeName: 'Item text 4',
-        uri: 'https://picsum.photos/id/1035/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "4",
+        storeName: "Item text 4",
+        uri: "https://picsum.photos/id/1035/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '5',
-        storeName: 'Item text 5',
-        uri: 'https://picsum.photos/id/1038/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "5",
+        storeName: "Item text 5",
+        uri: "https://picsum.photos/id/1038/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
     ],
   },
   {
-    title: 'Chinese Food',
+    title: "Chinese Food",
     status: "Chinese",
     data: [
       {
-        key: '1',
-        storeName: 'Item text 1',
-        uri: 'https://picsum.photos/id/1020/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "1",
+        storeName: "Item text 1",
+        uri: "https://picsum.photos/id/1020/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '2',
-        storeName: 'Item text 2',
-        uri: 'https://picsum.photos/id/1024/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "2",
+        storeName: "Item text 2",
+        uri: "https://picsum.photos/id/1024/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
 
       {
-        key: '3',
-        storeName: 'Item text 3',
-        uri: 'https://picsum.photos/id/1027/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "3",
+        storeName: "Item text 3",
+        uri: "https://picsum.photos/id/1027/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '4',
-        storeName: 'Item text 4',
-        uri: 'https://picsum.photos/id/1035/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "4",
+        storeName: "Item text 4",
+        uri: "https://picsum.photos/id/1035/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
       {
-        key: '5',
-        storeName: 'Item text 5',
-        uri: 'https://picsum.photos/id/1038/200',
-        walkingTime: '~ 10 mins',
-        distance: '2.5 km',
+        key: "5",
+        storeName: "Item text 5",
+        uri: "https://picsum.photos/id/1038/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
       },
     ],
   },
@@ -517,15 +555,15 @@ const SECTIONS = [
 const styles = StyleSheet.create({
   headerStyle: {
     flex: 0.2,
-    backgroundColor:"#fbaf03", 
-    borderBottomRightRadius: 15, 
+    backgroundColor: "#fbaf03",
+    borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15,
     // flexDirection: "row",
     // transform: [{ translateY: -35 }]
     // marginBottom: 10,
   },
   backArrow: {
-    marginLeft: 10, 
+    marginLeft: 10,
     marginTop: 55,
     fontSize: 30,
   },
@@ -534,7 +572,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 50,
     marginLeft: 7,
-    color: "#2b2b2b"
+    color: "#2b2b2b",
   },
   filterButtonsList: {
     flex: 0.7,
@@ -545,9 +583,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   filterBtn: {
-    width: Dimensions.get('window').width / 5,
+    width: Dimensions.get("window").width / 5,
     height: 30,
-    flexDirection: 'row',
+    flexDirection: "row",
     borderWidth: 0.5,
     borderColor: "#d6d6d6",
     borderRadius: 10,
@@ -563,12 +601,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   sectionHeader: {
-    fontWeight: '800',
+    fontWeight: "800",
     fontSize: 22,
-    color: '#363636',
+    color: "#363636",
     marginTop: 20,
     marginBottom: 5,
     marginLeft: 18,
@@ -592,7 +630,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   itemText: {
-    color: '#363636',
+    color: "#363636",
     marginTop: 5,
     fontSize: 15,
     fontWeight: "bold",
