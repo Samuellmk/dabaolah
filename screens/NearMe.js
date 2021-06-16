@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontWeight: "800",
-    fontSize: 25,
+    fontSize: 22,
     color: "#363636",
     marginTop: 20,
     marginBottom: 5,
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderPick: {
     fontWeight: "800",
-    fontSize: 25,
+    fontSize: 22,
     color: "#363636",
     marginTop: 20,
     marginBottom: 5,
