@@ -75,7 +75,6 @@ export default function NearMe({ route, navigation }) {
 
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
-  const [cuisines, setCuisines] = useState([]);
 
   async function retrieveData() {
     localDB.transaction((tx) => {
@@ -87,18 +86,15 @@ export default function NearMe({ route, navigation }) {
       );
     });
 
-    const retrieveStalls = firebase.firestore().collection('stores').onSnapshot((collection) => {
-      const stalls = collection.docs.map((doc) => doc.data());
-      setStallsInfo(stalls);
-    });
-    const retrieveCuisines = firebase.firestore().collection('cuisines').onSnapshot((collection) => {
-      const cuis = collection.docs.map((doc) => doc.data());
-      setCuisines(cuis);
-    })
-
+    const unsubscribe = firebase
+      .firestore()
+      .collection("stores")
+      .onSnapshot((collection) => {
+        const stalls = collection.docs.map((doc) => doc.data());
+        setStallsInfo(stalls);
+      });
     return () => {
-      retrieveStalls();
-      retrieveCuisines();
+      unsubscribe();
     };
   }
 
@@ -117,79 +113,8 @@ export default function NearMe({ route, navigation }) {
     );
   }, []);
 
-  var sectionData = [...SECTIONS];
-  // for (var section1 of sectionData) {
-  //   for (var cuisineObj of cuisines) {
-  //     if (section1.status === "New") {
-  //       section1.data = stallsInfo.filter((stall) => {
-  //         return stall.location < 4;
-  //       });
-  //       break;
-  //     }
-  //     else if (section1.status === "Our Picks") {
-  //       section1.data = stallsInfo.filter((stall) => {
-  //         return stall.location === 3 ||
-  //           stall.location === 7 ||
-  //           stall.location === 8
-  //       });
-  //       PICK[0].data = stallsInfo.filter((stall) => {
-  //         return stall.location === 3 ||
-  //           stall.location === 7 ||
-  //           stall.location === 8
-  //       });
-  //       break;
-  //     }
-  //     else if (section1.status === cuisineObj.cuisine) {
-  //       var cuisineNum = 1 + cuisines.findIndex((stallCuisine) => {
-  //         return stallCuisine === cuisineObj;
-  //       });
-  //       section1.data = stallsInfo.filter((stall) => {
-  //         return stall.cuisine === cuisineNum;
-  //       });
-  //       break;
-  //     };
-  //   };
-  // };
-  for (var section1 of sectionData) {
-    for (var cuisineObj of cuisines) {
-      if (section1.status === "Our Picks") {
-        PICK[0].data = stallsInfo.filter((stall) => {
-          return stall.location === 3 ||
-            stall.location === 7 ||
-            stall.location === 8
-        });
-        break;
-      }
-      else if (section1.status === cuisineObj.cuisine) {
-        var cuisineNum = 1 + cuisines.findIndex((stallCuisine) => {
-          return stallCuisine === cuisineObj;
-        });
-        section1.data = stallsInfo.filter((stall) => {
-          return stall.cuisine === cuisineNum;
-        });
-      };
-    };
-  };
-  sectionData.shift(); // remove "newly added"
-  sectionData.shift(); // remove "our picks"
-  // remove some stalls for nearme page
-  sectionData[0]['data'].shift();
-  sectionData[1]['data'].shift();
-  sectionData[1]['data'].shift();
-  sectionData[1]['data'].shift();
-  sectionData[1]['data'].pop();
-  sectionData[1]['data'].pop();
-  sectionData[1]['data'].pop();
-
-  // const featuredList =  sectionData.filter((section2) => {
-  //   return section2.status === "Our Picks";
-  // });
-  // for (var featured of featuredList.data) {
-  //   PICK = [...PICK, featured];
-  // }
-
   const [filterStatus, setFilterStatus] = useState("All");
-  const [dataList, setDataList] = useState(sectionData);
+  const [dataList, setDataList] = useState(SECTIONS);
 
   const setFilterStatusFunc = (filterStatus) => {
     if (filterStatus !== "All") {
@@ -217,19 +142,19 @@ export default function NearMe({ route, navigation }) {
         <View style={{ marginLeft: 20, marginTop: 40 }}>
           <Text style={styles.headerText1}>I'm near...</Text>
           <Text style={styles.headerText2}>{text}</Text>
-          <View style={styles.filterButtonsList}>
-            {filterList.map((e) => (
-              <TouchableOpacity
-                style={[
-                  styles.filterBtn,
-                  filterStatus === e.status && styles.filterBtnActive,
-                ]}
-                onPress={() => setFilterStatusFunc(e.status)}
-              >
-                <Text>{e.status}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        </View>
+        <View style={styles.filterButtonsList}>
+          {filterList.map((e) => (
+            <TouchableOpacity
+              style={[
+                styles.filterBtn,
+                filterStatus === e.status && styles.filterBtnActive,
+              ]}
+              onPress={() => setFilterStatusFunc(e.status)}
+            >
+              <Text>{e.status}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
@@ -239,7 +164,7 @@ export default function NearMe({ route, navigation }) {
             // contentContainerStyle={{ paddingHorizontal:0 }}
             ListHeaderComponent={OurPick}
             stickySectionHeadersEnabled={false}
-            sections={dataList}
+            sections={SECTIONS}
             renderSectionHeader={({ section }) => (
               <>
                 <Text style={styles.sectionHeader}>{section.title}</Text>
@@ -247,7 +172,6 @@ export default function NearMe({ route, navigation }) {
                   horizontal
                   data={section.data}
                   renderItem={({ item }) => <ListItem item={item} />}
-                  keyExtractor={(item) => item.storeName}
                   showsHorizontalScrollIndicator={false}
                 />
                 <Divider
@@ -273,7 +197,7 @@ function OurPick() {
     <>
       <View style={styles.containerPick}>
         <View style={{ marginLeft: 20, marginRight: 20 }}>
-          <Text style={styles.sectionHeaderPick}>Featured</Text>
+          <Text style={styles.sectionHeaderPick}>Our Picks</Text>
           <View
             style={{
               padding: 15,
@@ -282,14 +206,12 @@ function OurPick() {
             }}
           >
             <Image
-              source={{ uri: PICK[0]['data'][0].picture1 }}
-              // source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
+              source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
               style={styles.itemPhoto}
             />
           </View>
           <View style={styles.itemTextContainer}>
-            <Text style={styles.featuredText}>{PICK[0]['data'][0].storeName}</Text>
-            {/* <Text style={styles.itemText}>{PICK[0].storeName}</Text> */}
+            <Text style={styles.itemText}>{PICK[0].data[0].text}</Text>
             <View style={styles.itemTextContainer2}>
               <FontAwesome5
                 style={{ margin: 3 }}
@@ -297,10 +219,9 @@ function OurPick() {
                 size={16}
                 color="#363636"
               />
-              <Text style={styles.itemText2}>~7 mins ∙ 0.8km</Text>
-              {/* <Text style={styles.itemText2}>
+              <Text style={styles.itemText2}>
                 {PICK[0].data[0].walkingTime} ∙ {PICK[0].data[0].distance}
-              </Text> */}
+              </Text>
             </View>
           </View>
         </View>
@@ -319,12 +240,12 @@ const ListItem = ({ item }) => {
   return (
     <View style={styles.item}>
       <Image
-        source={{ uri: item.picture1 }} // this needs to change to variable item.uri instead to generate different images
+        source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
         style={styles.itemPhotoForFlat}
         resizeMode="cover"
       />
       <View style={styles.itemTextContainerForFlat}>
-        <Text style={styles.itemText}>{item.storeName}</Text>
+        <Text style={styles.itemText}>{item.text}</Text>
         <View style={styles.itemTextContainer2}>
           <FontAwesome5
             style={{ margin: 3 }}
@@ -332,10 +253,9 @@ const ListItem = ({ item }) => {
             size={16}
             color="#363636"
           />
-          <Text style={styles.itemText2}>~10 mins ∙ 1.1km</Text>
-          {/* <Text style={styles.itemText2}>
+          <Text style={styles.itemText2}>
             {item.walkingTime} ∙ {item.distance}
-          </Text> */}
+          </Text>
         </View>
       </View>
     </View>
@@ -356,8 +276,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   headerText1: {
-    flex: 0.3,
-    marginTop: 20,
+    flex: 0.5,
+    marginTop: 10,
     fontSize: 20,
     color: "#2b2b2b",
   },
@@ -419,21 +339,16 @@ const styles = StyleSheet.create({
   },
   itemText: {
     color: "#363636",
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: "bold",
   },
   itemText2: {
     color: "#5c5c5c",
     marginTop: 3,
   },
-  featuredText: {
-    color: "#363636",
-    fontSize: 19,
-    fontWeight: "bold",
-  },
   filterButtonsList: {
     flex: 0.7,
-    backgroundColor: "transparent",
+    backgroundColor: "white",
     flexDirection: "row",
     alignSelf: "center",
     borderRadius: 10,
@@ -470,113 +385,87 @@ const PICK = [
   },
 ];
 
-// const PICK = [];
-
-
 const SECTIONS = [
   {
-    title: 'Newly Added',
-    status: "New",
-    data: []
+    title: "Newly Added",
+    data: [
+      {
+        key: "1",
+        text: "Xiang Xiang Traditional Taiwanese Cuisine",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "./sample_pic.jpg", // this doesn't work... (like when i input item.uri as a variable into the image source)
+      },
+      {
+        key: "2",
+        text: "Item text 2",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/10/200",
+      },
+
+      {
+        key: "3",
+        text: "Item text 3",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1002/200",
+      },
+      {
+        key: "4",
+        text: "Item text 4",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1006/200",
+      },
+      {
+        key: "5",
+        text: "Item text 5",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+        uri: "https://picsum.photos/id/1008/200",
+      },
+    ],
   },
   {
-    title: 'Our Picks',
-    status: "Our Picks",
-    data: []
-  },
-  {
-    title: 'Halal Certified',
-    status: "Halal",
-    data: []
-  },
-  {
-    title: 'Chinese Food',
-    status: "Chinese",
-    data: []
+    title: "Chinese Food",
+    data: [
+      {
+        key: "1",
+        text: "Item text 1",
+        uri: "https://picsum.photos/id/1020/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+      },
+      {
+        key: "2",
+        text: "Item text 2",
+        uri: "https://picsum.photos/id/1024/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+      },
+
+      {
+        key: "3",
+        text: "Item text 3",
+        uri: "https://picsum.photos/id/1027/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+      },
+      {
+        key: "4",
+        text: "Item text 4",
+        uri: "https://picsum.photos/id/1035/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+      },
+      {
+        key: "5",
+        text: "Item text 5",
+        uri: "https://picsum.photos/id/1038/200",
+        walkingTime: "~ 10 mins",
+        distance: "2.5 km",
+      },
+    ],
   },
 ];
-
-// const SECTIONS = [
-//   {
-//     title: "Newly Added",
-//     data: [
-//       {
-//         key: "1",
-//         text: "Xiang Xiang Traditional Taiwanese Cuisine",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//         uri: "./sample_pic.jpg", // this doesn't work... (like when i input item.uri as a variable into the image source)
-//       },
-//       {
-//         key: "2",
-//         text: "Item text 2",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//         uri: "https://picsum.photos/id/10/200",
-//       },
-
-//       {
-//         key: "3",
-//         text: "Item text 3",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//         uri: "https://picsum.photos/id/1002/200",
-//       },
-//       {
-//         key: "4",
-//         text: "Item text 4",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//         uri: "https://picsum.photos/id/1006/200",
-//       },
-//       {
-//         key: "5",
-//         text: "Item text 5",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//         uri: "https://picsum.photos/id/1008/200",
-//       },
-//     ],
-//   },
-//   {
-//     title: "Chinese Food",
-//     data: [
-//       {
-//         key: "1",
-//         text: "Item text 1",
-//         uri: "https://picsum.photos/id/1020/200",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//       },
-//       {
-//         key: "2",
-//         text: "Item text 2",
-//         uri: "https://picsum.photos/id/1024/200",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//       },
-
-//       {
-//         key: "3",
-//         text: "Item text 3",
-//         uri: "https://picsum.photos/id/1027/200",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//       },
-//       {
-//         key: "4",
-//         text: "Item text 4",
-//         uri: "https://picsum.photos/id/1035/200",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//       },
-//       {
-//         key: "5",
-//         text: "Item text 5",
-//         uri: "https://picsum.photos/id/1038/200",
-//         walkingTime: "~ 10 mins",
-//         distance: "2.5 km",
-//       },
-//     ],
-//   },
-// ];
