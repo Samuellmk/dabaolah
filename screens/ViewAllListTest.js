@@ -1,27 +1,80 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Divider } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 import { ListItemBase } from 'react-native-elements/dist/list/ListItemBase';
+import firebase from "../database/firestoreDB";
+import * as SQLite from "expo-sqlite"
 // import ScrollingButtonMenu from 'react-native-scrolling-button-menu';
+
+const localDB = SQLite.openDatabase("savedStalls.db")
+const db = firebase.firestore()
+const stallsRef = db.collection('stores')
+const locationsRef = db.collection('locations')
+const cuisinesRef = db.collection('cuisines')
+
+
+
+async function retrieveData() {
+  [savedStalls, setSavedStalls] = useState([]);
+  [stallsInfo, setStallsInfo] = useState([]);
+
+  localDB.transaction((tx) => {
+    tx.executeSql(
+    "SELECT * FROM savedStalls",
+    null,
+    (txObj, { rows: { _array } }) => setSavedStalls(_array),
+    (txObj, error) => console.error("Error ", error)
+    );
+    });
+
+  const unsubscribe = firebase.firestore().collection('stores').onSnapshot((collection) => {const stalls = collection.docs.map((doc) => doc.data());
+      setStallsInfo(stalls);
+    });
+  
+  // const snapshot = await stallsRef.get();
+  // if (snapshot.empty) {
+  //   console.log('No matching stalls.');
+  //   return;
+  // }
+  // snapshot.forEach(doc => {
+  //   setStallsInfo([
+  //     ...stallsInfo,
+  //     {
+  //       storeName: doc.storeName,
+  //       location: doc.location, // NOTE: this location is the number, not the actual location
+  //       cuisine: doc.cuisine, // NOTE: this cuisine is the number, not the actual cuisine
+  //       pic1: doc.picture1,
+  //       pic2: doc.picture2,
+  //       pic3: doc.picture3
+  //     },
+  //   ]);
+  // });
+
+  return () => {
+    unsubscribe();
+    return stallsInfo;
+  };
+}
 
 
 const ListItem = ({ item }) => {
-  return (
+    return (
     <View style={styles.item}>
       <Image
-        source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
+        source={{ uri: item.picture1 }}
         style={styles.itemPhoto}
         resizeMode="cover"
       />
       <View style={styles.itemTextContainer}>
-        <Text style={styles.itemText}>{item.text}</Text>
+        <Text style={styles.itemText} numberOfLines={2}>{item.storeName}</Text>
         <View style={styles.itemTextContainer2}>
-          <FontAwesome5 style={{margin:3}} name="walking" size={16} color="#363636" />
-          <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text>
+          <FontAwesome5 style={{ margin: 3 }} name="walking" size={16} color="#363636" />
+          {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
+          <Text style={styles.itemText2}>~10 mins ∙ 2.5km</Text>
         </View>
       </View>
     </View>
@@ -48,16 +101,53 @@ const filterList = [
 
 export default () => {
 
+  //shauna's db
+  const [savedStalls, setSavedStalls] = useState([]);
+  const [stallsInfo, setStallsInfo] = useState([]);
+
+  async function retrieveData() {
+    localDB.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM savedStalls",
+        null,
+        (txObj, { rows: { _array } }) => setSavedStalls(_array),
+        (txObj, error) => console.error("Error ", error)
+      );
+    });
+
+    const unsubscribe = firebase.firestore().collection('stores').onSnapshot((collection) => {
+      const stalls = collection.docs.map((doc) => doc.data());
+      setStallsInfo(stalls);
+    });
+    return () => {
+      unsubscribe();
+    };
+  };
+
+  useEffect(() => {
+    localDB.transaction((tx) => {
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS
+        savedStalls
+        (storeName TEXT PRIMARY KEY,
+          location TEXT);`
+      );
+    }, null, retrieveData);
+  }, []);
+  //shauna's db
+
+
   const [filterStatus, setFilterStatus] = useState("All")
-  const [dataList, setDataList] = useState(SECTIONS.data)
+  const [dataList, setDataList] = useState(SECTIONS)
+  
   const setFilterStatusFunc = filterStatus => {
-    if(status !== "All") {   // purple and green
-      setDataList([...(SECTIONS.data).filter(e => e.status === status)])
+    if(filterStatus !== "All") {   // Chinese or Halal
+      setDataList([...SECTIONS.filter(e => e.status === filterStatus)])
     }
     else  {
-      setDataList(SECTIONS.data)
+      setDataList(SECTIONS)
     }
-    setFilterStatus(status)
+    setFilterStatus(filterStatus)
   }
 
   return (
@@ -69,15 +159,15 @@ export default () => {
         </View>
         {/* <SafeAreaView style={styles.filterButtonsContainer}> */}
           <View style={styles.filterButtonsList}>
-            {
-              filterList.map(e => (
-                <TouchableOpacity 
-                  style={[styles.filterBtn, filterStatus === e.status && styles.filterBtnActive]}
-                  onPress={() => setFilterStatusFunc(e.status)}>
-                  <Text>{e.status}</Text>
-                </TouchableOpacity>
-              ))
-            }
+              {
+                filterList.map(e => (
+                  <TouchableOpacity 
+                    style={[styles.filterBtn, filterStatus === e.status && styles.filterBtnActive]}
+                    onPress={() => setFilterStatusFunc(e.status)}>
+                    <Text>{e.status}</Text>
+                  </TouchableOpacity>
+                ))
+              }
           </View>
         {/* </SafeAreaView> */}
       </View>
@@ -87,14 +177,15 @@ export default () => {
           <SectionList
             // contentContainerStyle={{ paddingHorizontal:0 }}
             stickySectionHeadersEnabled={false}
-            sections={SECTIONS}
+            sections={dataList}
             renderSectionHeader={({ section }) => (
               <>
               <Text style={styles.sectionHeader}>{section.title}</Text>
               <FlatList
                 horizontal
-                data={section.data}
+                data={stallsInfo}
                 renderItem={({ item }) => <ListItem item={item} />}
+                keyExtractor={(item) => item.storeName}
                 showsHorizontalScrollIndicator={false}
               />
               <Divider 
@@ -304,19 +395,20 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 25,
     fontWeight: "bold",
-    marginTop: 55,
+    marginTop: 50,
     marginLeft: 7,
     color: "#2b2b2b"
   },
   filterButtonsList: {
     flex: 0.7,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignSelf: "center",
     borderRadius: 10,
+    marginLeft: 65,
   },
   filterBtn: {
-    width: Dimensions.get('window').width / 4.5,
+    width: Dimensions.get('window').width / 5,
     flexDirection: 'row',
     borderWidth: 0.5,
     borderColor: "#d6d6d6",
@@ -324,9 +416,11 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: "center",
     alignItems: "center",
+    marginLeft: 10,
+    backgroundColor: "#ededed",
   },
   filterBtnActive: {
-    backgroundColor: "#ffc687",
+    backgroundColor: "#ffe29c",
     borderColor: "#c78842",
   },
   container: {

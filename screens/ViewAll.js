@@ -1,217 +1,20 @@
-// import { StatusBar } from "expo-status-bar";
-// import React, { useState, useEffect, Component } from "react";
-// import { Text, View, StyleSheet, Image } from "react-native";
-// import SkeletonContent from "react-native-skeleton-content";
-// import Constants from "expo-constants";
-// // import { Card } from 'react-native-paper';
-
-// // TO DO:
-// // header [DONE]
-// // bubble filters 
-// // color of bubble filters
-// // nav tabs (incoporate back) [DONE]
-// // button touchable opacity
-// // ... if word length exceeds container width
-// // divider don't appear below , maybe can do on top of each section then hide with header
-// // 
-
-
-// const firstLayout = [
-//   {
-//     width: 250,
-//     height: 140,
-//     borderRadius: 20,
-//     marginRight: 20,
-//     marginTop: 20,
-//   },
-//   // {
-//   //   flexDirection: 'column',
-//   //   marginRight: 10,
-//   //   children: [
-//   //     {
-//   //       width: "100%",
-//   //       height: "50%",
-//   //       marginBottom: 10
-//   //     },
-//   //     {
-//   //       width: "50%",
-//   //       height: "20%",
-//   //       marginBottom: 10
-//   //     },
-//   //     {
-//   //       width: 100,
-//   //       height: 20
-//   //     }
-//   //   ]
-//   // },
-// ];
-// const secondLayout = [
-//   {
-//     width: 240,
-//     height: "20%",
-//     // marginBottom: 20,
-//     borderRadius: 15
-//   },
-// ];
-// const thirdLayout = [
-//   {
-//     width: 220,
-//     height: 20,
-//     marginBottom: 8,
-//   },
-//   {
-//     width: 180,
-//     height: 20,
-//   },
-// ];
-
-// const INTERVAL_REFRESH = 2000;
-
-// export default function() {
-//     const [isLoading, setIsLoading] = useState(true);
-  
-//     // should load only after db fetches data?
-//     useEffect(() => {
-//         if(!isLoading){
-//            const timeoutId = setTimeout(() => setIsLoading(true), INTERVAL_REFRESH);
-//            return () => clearTimeout(timeoutId);
-//         }
-//         else{
-//           const timeoutId = setTimeout(() => setIsLoading(false), INTERVAL_REFRESH);
-//           return () => clearTimeout(timeoutId);
-//         }
-//     }, [isLoading]);
-  
-//       return (
-//         <View style={styles.container}>
-//           {/* <Card style={styles.card}> */}
-//             <SkeletonContent
-//               containerStyle={styles.titleContainer}
-//               layout={secondLayout}
-//               isLoading={isLoading}>
-//               <Text style={styles.bigText}>big words</Text>
-//             </SkeletonContent>
-            
-//             <SkeletonContent
-//               containerStyle={styles.top}
-//               layout={firstLayout}
-//               isLoading={isLoading}>
-//               <View style = {imageContainerStyle.imageContainer}>
-//                 <View style = {imageContainerStyle.rowContainer}>
-//                     <Image
-//                       source={require('./sample_pic.jpg')}
-//                       style={styles.image}/>
-//                     <Image
-//                       source={require('./sample_pic.jpg')}
-//                       style={styles.image}/>
-//                     <Image
-//                         source={require('./sample_pic.jpg')}
-//                         style={styles.image}/>
-//                 </View>
-//               </View>
-//               {/* <View style={styles.nested}>
-//                   <Text style={styles.normalText}>Nested 1</Text>
-//                   <Text style={styles.normalText}>Nested 2</Text>
-//                   <Text style={styles.normalText}>Nested 3</Text>
-//               </View> */}
-//             </SkeletonContent>
-  
-//             <SkeletonContent
-//               layout={thirdLayout}
-//               containerStyle={styles.descContainer}
-//               isLoading={isLoading}>
-//               <Text style={styles.normalText}>
-//                 some other words here
-//               </Text>
-//             </SkeletonContent>
-//           {/* </Card> */}
-//         </View>
-//       );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     paddingTop: Constants.statusBarHeight,
-//     backgroundColor: "#ecf0f1",
-//   },
-//   image: {
-//     resizeMode: "contain",
-//     width: 50,
-//     height: 50, // width and height values don't matter here?
-//     padding: 60, // higher padding is larger image and smaller border (for some reason)
-//     marginHorizontal: 10,
-//   },
-//   titleContainer: {
-//     width: 300,
-//     padding: 20,
-//     justifyContent: "center",
-//     flex: 1,
-//   },
-//   descContainer: {
-//     width: 300,
-//     padding: 20,
-//     flex: 1,
-//   },
-//   top: {
-//     width: 300,
-//     flex: 1,
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     padding: 20,
-//   },
-//   bigText: {
-//     fontWeight: "bold",
-//     fontSize: 28,
-//   },
-//   // card: {
-//   //   height: 400,
-//   //   width: 300,
-//   //   borderRadius: 10,
-//   //   backgroundColor: '#fff',
-//   // },
-//   // nested: {
-//   //   flexDirection: 'column',
-//   //   marginRight: 20
-//   // }
-// });
-
-// const imageContainerStyle = StyleSheet.create({
-//   imageContainer: {
-//     width: 45,
-//     height: 45,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     flex: 1,
-//   },
-//   rowContainer: {
-//     flexDirection: "row",
-//     // flex: 1,
-//   },
-// });
-
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Divider } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
-import { Dimensions } from 'react-native';
+import SkeletonContent from "react-native-skeleton-content";
 import { ListItemBase } from 'react-native-elements/dist/list/ListItemBase';
 import firebase from "../database/firestoreDB";
 import * as SQLite from "expo-sqlite"
-// import ScrollingButtonMenu from 'react-native-scrolling-button-menu';
+
 
 const localDB = SQLite.openDatabase("savedStalls.db")
 const db = firebase.firestore()
 const stallsRef = db.collection('stores')
 const locationsRef = db.collection('locations')
 const cuisinesRef = db.collection('cuisines')
-
-
 
 async function retrieveData() {
   [savedStalls, setSavedStalls] = useState([]);
@@ -331,7 +134,99 @@ export default () => {
   }, []);
   //shauna's db
 
+  //skele states and variables
+  const viewAllSkeleLayout = [
+    {
+      width: "40%",
+      height: "4%",
+      borderRadius: 15,
+      marginRight: 200,
+    },
+    {
+      width: "80%",
+      height: "20%",
+      borderRadius: 30,
+      marginRight: 30,
+      marginTop: 15,
+    },
+    {
+      width : "70%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 70,
+    },
+    {
+      width : "60%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 110,
+    },
+    {
+      width : "60%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 110,
+      marginBottom: 50,
+    },
+    {
+      width: "40%",
+      height: "4%",
+      borderRadius: 15,
+      marginRight: 200,
+    },
+    {
+      width: "80%",
+      height: "20%",
+      borderRadius: 30,
+      marginRight: 30,
+      marginTop: 15,
+    },
+    {
+      width : "70%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 70,
+    },
+    {
+      width : "60%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 110,
+    },
+    {
+      width : "60%",
+      height: "2%",
+      borderRadius: 15,
+      marginRight: 30,
+      marginTop: 13,
+      marginRight: 110,
+      marginBottom: 90,
+    },
+  ]
 
+  const [isLoading, setIsLoading] = useState(true);
+  const LOAD_TIME = 2000;
+
+    // should load only after db fetches data?
+    useEffect(() => {
+        if(isLoading) {
+          const timeoutId = setTimeout(() => setIsLoading(false), LOAD_TIME);
+          return () => clearTimeout(timeoutId);
+        }
+    }, [isLoading]);
+
+
+  //filter button states
   const [filterStatus, setFilterStatus] = useState("All")
   const [dataList, setDataList] = useState(SECTIONS)
   
@@ -358,7 +253,11 @@ export default () => {
                 filterList.map(e => (
                   <TouchableOpacity 
                     style={[styles.filterBtn, filterStatus === e.status && styles.filterBtnActive]}
-                    onPress={() => setFilterStatusFunc(e.status)}>
+                    onPress={() => {
+                      setFilterStatusFunc(e.status)
+                      setIsLoading(true)
+                    }}
+                  >
                     <Text>{e.status}</Text>
                   </TouchableOpacity>
                 ))
@@ -366,37 +265,40 @@ export default () => {
           </View>
         {/* </SafeAreaView> */}
       </View>
-      <View style={styles.container}>
-        <StatusBar style="dark" />
-        <SafeAreaView style={{ flex: 1 }}>
-          <SectionList
-            // contentContainerStyle={{ paddingHorizontal:0 }}
-            stickySectionHeadersEnabled={false}
-            sections={dataList}
-            renderSectionHeader={({ section }) => (
-              <>
-              <Text style={styles.sectionHeader}>{section.title}</Text>
-              <FlatList
-                horizontal
-                data={stallsInfo}
-                renderItem={({ item }) => <ListItem item={item} />}
-                keyExtractor={(item) => item.storeName}
-                showsHorizontalScrollIndicator={false}
-              />
-              <Divider 
-                style={{marginTop: 10}}
-                color="#ebebeb"
-                width={7} 
-                orientation="horizontal" 
-              />
-              </>
-            )}
-            renderItem={({ item, section }) => {
-              return null;
-            }}
-          />
-        </SafeAreaView>
-      </View>
+
+      <SkeletonContent isLoading={isLoading} layout={viewAllSkeleLayout}>
+        <View style={styles.container}>
+          <StatusBar style="dark" />
+          <SafeAreaView style={{ flex: 1 }}>
+            <SectionList
+              // contentContainerStyle={{ paddingHorizontal:0 }}
+              stickySectionHeadersEnabled={false}
+              sections={dataList}
+              renderSectionHeader={({ section }) => (
+                <>
+                <Text style={styles.sectionHeader}>{section.title}</Text>
+                <FlatList
+                  horizontal
+                  data={stallsInfo}
+                  renderItem={({ item }) => <ListItem item={item} />}
+                  keyExtractor={(item) => item.storeName}
+                  showsHorizontalScrollIndicator={false}
+                />
+                <Divider 
+                  style={{marginTop: 10}}
+                  color="#ebebeb"
+                  width={7} 
+                  orientation="horizontal" 
+                />
+                </>
+              )}
+              renderItem={({ item, section }) => {
+                return null;
+              }}
+            />
+          </SafeAreaView>
+        </View>
+      </SkeletonContent>
     </>
   );
 };
@@ -599,11 +501,12 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignSelf: "center",
-    borderRadius: 10,
     marginLeft: 65,
+    marginTop: 5,
   },
   filterBtn: {
     width: Dimensions.get('window').width / 5,
+    height: 30,
     flexDirection: 'row',
     borderWidth: 0.5,
     borderColor: "#d6d6d6",
