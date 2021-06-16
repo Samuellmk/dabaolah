@@ -50,7 +50,7 @@ const ViewAllStack = createStackNavigator();
 
 function ViewAllStackScreen() {
   return (
-      <ViewAllStack.Navigator mode="modal">
+      <ViewAllStack.Navigator mode="modal" headerMode = "none">
         <ViewAllStack.Screen 
           name="ViewAll" 
           component={ViewAll} 
@@ -108,13 +108,13 @@ export default function App() {
             tabBarButton: CustomTabButton,
           }}
         />
-        {/* <Tab.Screen 
+        <Tab.Screen 
           name="Saved" 
           component={Saved} 
           options={{
           tabBarButton: CustomTabButton,
           }}
-        /> */}
+        />
         <Tab.Screen
           name="Settings"
           component={Settings}
