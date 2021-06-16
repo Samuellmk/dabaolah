@@ -375,10 +375,10 @@ export default () => {
   
   const setFilterStatusFunc = filterStatus => {
     if(filterStatus !== "All") {   // Chinese or Halal
-      setDataList([...SECTIONS.filter(e => e.status === filterStatus)])
+      setDataList([...sectionData.filter(e => e.status === filterStatus)])
     }
     else  {
-      setDataList(SECTIONS)
+      setDataList(sectionData)
     }
     setFilterStatus(filterStatus)
   }
