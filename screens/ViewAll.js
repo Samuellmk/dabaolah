@@ -198,8 +198,13 @@ import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, Scr
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Divider } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+import firebase from "../database/firestoreDB";
 // import ScrollingButtonMenu from 'react-native-scrolling-button-menu';
 
+const db = firebase.firestore()
+const stallsRef = db.collection('stores')
+const locationsRef = db.collection('locations')
+const cuisinesRef = db.collection('cuisines')
 
 const ListItem = ({ item }) => {
   return (
