@@ -8,15 +8,123 @@ import {
   SectionList,
   FlatList,
   Image,
+  Dimensions,
 } from "react-native";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Divider } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native";
+
+import firebase from "../database/firestoreDB";
+import * as SQLite from "expo-sqlite";
+// DB Stuff
+
+const localDB = SQLite.openDatabase("savedStalls.db");
+const db = firebase.firestore();
+const stallsRef = db.collection("stores");
+const locationsRef = db.collection("locations");
+const cuisinesRef = db.collection("cuisines");
+
+async function retrieveData() {
+  [savedStalls, setSavedStalls] = useState([]);
+  [stallsInfo, setStallsInfo] = useState([]);
+
+  localDB.transaction((tx) => {
+    tx.executeSql(
+      "SELECT * FROM savedStalls",
+      null,
+      (txObj, { rows: { _array } }) => setSavedStalls(_array),
+      (txObj, error) => console.error("Error ", error)
+    );
+  });
+
+  const unsubscribe = firebase
+    .firestore()
+    .collection("stores")
+    .onSnapshot((collection) => {
+      const stalls = collection.docs.map((doc) => doc.data());
+      setStallsInfo(stalls);
+    });
+
+  return () => {
+    unsubscribe();
+    return stallsInfo;
+  };
+}
+
+const filterList = [
+  {
+    status: "All",
+  },
+  {
+    status: "Chinese",
+  },
+  {
+    status: "Halal",
+  },
+  {
+    status: "Western",
+  },
+  {
+    status: "Vegetarian",
+  },
+];
 
 export default function NearMe({ route, navigation }) {
   const { text } = route.params;
+
+  const [savedStalls, setSavedStalls] = useState([]);
+  const [stallsInfo, setStallsInfo] = useState([]);
+
+  async function retrieveData() {
+    localDB.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM savedStalls",
+        null,
+        (txObj, { rows: { _array } }) => setSavedStalls(_array),
+        (txObj, error) => console.error("Error ", error)
+      );
+    });
+
+    const unsubscribe = firebase
+      .firestore()
+      .collection("stores")
+      .onSnapshot((collection) => {
+        const stalls = collection.docs.map((doc) => doc.data());
+        setStallsInfo(stalls);
+      });
+    return () => {
+      unsubscribe();
+    };
+  }
+
+  useEffect(() => {
+    localDB.transaction(
+      (tx) => {
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS
+        savedStalls
+        (storeName TEXT PRIMARY KEY,
+          location TEXT);`
+        );
+      },
+      null,
+      retrieveData
+    );
+  }, []);
+
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [dataList, setDataList] = useState(SECTIONS);
+
+  const setFilterStatusFunc = (filterStatus) => {
+    if (filterStatus !== "All") {
+      // Chinese or Halal
+      setDataList([...SECTIONS.filter((e) => e.status === filterStatus)]);
+    } else {
+      setDataList(SECTIONS);
+    }
+    setFilterStatus(filterStatus);
+  };
 
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
@@ -34,50 +142,27 @@ export default function NearMe({ route, navigation }) {
         <View style={{ marginLeft: 20, marginTop: 40 }}>
           <Text style={styles.headerText1}>I'm near...</Text>
           <Text style={styles.headerText2}>{text}</Text>
-        </View>
-      </View>
-      <View style={{ backgroundColor: "white", flex: 1 }}>
-        <View style={styles.containerPick}>
-          <View style={{ marginLeft: 20, marginRight: 20 }}>
-            <Text style={styles.sectionHeaderPick}>Our Picks</Text>
-            <View
-              style={{
-                padding: 15,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
-                style={styles.itemPhoto}
-              />
-            </View>
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemText}>{PICK[0].data[0].text}</Text>
-              <View style={styles.itemTextContainer2}>
-                <FontAwesome5
-                  style={{ margin: 3 }}
-                  name="walking"
-                  size={16}
-                  color="#363636"
-                />
-                <Text style={styles.itemText2}>
-                  {PICK[0].data[0].walkingTime} ∙ {PICK[0].data[0].distance}
-                </Text>
-              </View>
-            </View>
+          <View style={styles.filterButtonsList}>
+            {filterList.map((e) => (
+              <TouchableOpacity
+                style={[
+                  styles.filterBtn,
+                  filterStatus === e.status && styles.filterBtnActive,
+                ]}
+                onPress={() => setFilterStatusFunc(e.status)}
+              >
+                <Text>{e.status}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
-        <Divider
-          marginTop={10}
-          color="#ebebeb"
-          width={7}
-          orientation="horizontal"
-        />
+      </View>
 
+      <View style={{ backgroundColor: "white", flex: 1 }}>
         <View style={{ flex: 1 }}>
           <SectionList
             // contentContainerStyle={{ paddingHorizontal:0 }}
+            ListHeaderComponent={OurPick}
             stickySectionHeadersEnabled={false}
             sections={SECTIONS}
             renderSectionHeader={({ section }) => (
@@ -104,6 +189,50 @@ export default function NearMe({ route, navigation }) {
         </View>
       </View>
     </View>
+  );
+}
+
+function OurPick() {
+  return (
+    <>
+      <View style={styles.containerPick}>
+        <View style={{ marginLeft: 20, marginRight: 20 }}>
+          <Text style={styles.sectionHeaderPick}>Our Picks</Text>
+          <View
+            style={{
+              padding: 15,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
+              style={styles.itemPhoto}
+            />
+          </View>
+          <View style={styles.itemTextContainer}>
+            <Text style={styles.itemText}>{PICK[0].data[0].text}</Text>
+            <View style={styles.itemTextContainer2}>
+              <FontAwesome5
+                style={{ margin: 3 }}
+                name="walking"
+                size={16}
+                color="#363636"
+              />
+              <Text style={styles.itemText2}>
+                {PICK[0].data[0].walkingTime} ∙ {PICK[0].data[0].distance}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+      <Divider
+        marginTop={10}
+        color="#ebebeb"
+        width={7}
+        orientation="horizontal"
+      />
+    </>
   );
 }
 
@@ -193,7 +322,7 @@ const styles = StyleSheet.create({
   },
   itemTextContainer: {
     width: 385,
-    height: 240,
+    height: 80,
   },
   itemPhotoForFlat: {
     width: 140,
@@ -201,7 +330,7 @@ const styles = StyleSheet.create({
   },
   itemTextContainerForFlat: {
     width: 140,
-    height: 60,
+    height: 70,
   },
   itemTextContainer2: {
     flexDirection: "row",
@@ -215,7 +344,30 @@ const styles = StyleSheet.create({
   },
   itemText2: {
     color: "#5c5c5c",
-    marginTop: 5,
+    marginTop: 3,
+  },
+  filterButtonsList: {
+    flex: 0.7,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignSelf: "center",
+    borderRadius: 10,
+  },
+  filterBtn: {
+    width: Dimensions.get("window").width / 5,
+    flexDirection: "row",
+    borderWidth: 0.5,
+    borderColor: "#d6d6d6",
+    borderRadius: 10,
+    padding: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    backgroundColor: "#ededed",
+  },
+  filterBtnActive: {
+    backgroundColor: "#ffe29c",
+    borderColor: "#c78842",
   },
 });
 
