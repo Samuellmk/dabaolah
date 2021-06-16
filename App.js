@@ -27,9 +27,10 @@ export default function App() {
               iconName = focused ? "location" : "location-pin";
             } else if (route.name === "ViewAll") {
               iconName = "grid";
-            } else if (route.name === "Saved") {
-              iconName = "box";
-            } else if (route.name === "Settings") {
+            } 
+            // else if (route.name === "Saved") {
+            //   iconName = "box";} 
+            else if (route.name === "Settings") {
               iconName = "cog";
             }
 
@@ -44,7 +45,7 @@ export default function App() {
       >
         <Tab.Screen name="NearMe" component={NearMe} />
         <Tab.Screen name="ViewAll" component={ViewAll} />
-        <Tab.Screen name="Saved" component={Saved} />
+        {/* <Tab.Screen name="Saved" component={Saved} /> */}
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
     </NavigationContainer>
