@@ -64,7 +64,7 @@ export default function Home({ navigation }) {
       <MapView
         provider={PROVIDER_GOOGLE}
         initialRegion={{
-          latitude: 1.3551,
+          latitude: 1.355,
           longitude: 103.6843,
           latitudeDelta: 0,
           longitudeDelta: 0,

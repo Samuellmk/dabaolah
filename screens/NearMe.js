@@ -224,7 +224,7 @@ const PICK = [
     data: [
       {
         key: "1",
-        text: "Jiang Jiang Traditional Taiwanese Cuisine",
+        text: "Diang Diang Traditional Taiwanese Cuisine",
         uri: "https://picsum.photos/id/1011/200",
         walkingTime: "~ 10 mins",
         distance: "2.5 km",
