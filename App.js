@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -13,6 +13,17 @@ import Settings from "./screens/Settings";
 import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
+
+const CustomTabButton = (props) => (
+  <TouchableOpacity
+    {...props}
+    style={
+      props.accessibilityState.selected
+        ? [props.style, { borderTopColor: "#FE8B33", borderTopWidth: 2 }]
+        : props.style
+    }
+  />
+);
 
 export default function App() {
   return (
@@ -38,17 +49,37 @@ export default function App() {
           },
         })}
         tabBarOptions={{
-          activeTintColor: "tomato",
+          activeTintColor: "#FE8B33",
           inactiveTintColor: "gray",
           labelStyle: {
             fontSize: 12,
           },
         }}
       >
-        <Tab.Screen name="NearMe" component={NearMe} />
-        <Tab.Screen name="ViewAll" component={ViewAll} />
-        {/* <Tab.Screen name="Saved" component={Saved} /> */}
-        <Tab.Screen name="Settings" component={Settings} />
+        <Tab.Screen
+          name="NearMe"
+          component={NearMe}
+          options={{
+            tabBarButton: CustomTabButton,
+          }}
+        />
+        <Tab.Screen
+          name="ViewAll"
+          component={ViewAll}
+          options={{
+            tabBarButton: CustomTabButton,
+          }}
+        />
+        {/* <Tab.Screen name="Saved" component={Saved} />     options={{
+      tabBarButton: CustomTabButton,
+    }}*/}
+        <Tab.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            tabBarButton: CustomTabButton,
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
