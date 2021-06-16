@@ -224,8 +224,8 @@ async function retrieveData() {
     (txObj, { rows: { _array } }) => setSavedStalls(_array),
     (txObj, error) => console.error("Error ", error)
     );
-  });
-  
+    });
+
   const unsubscribe = firebase.firestore().collection('stores').onSnapshot((collection) => {const stalls = collection.docs.map((doc) => doc.data());
       setStallsInfo(stalls);
     });
@@ -276,8 +276,6 @@ const ListItem = ({ item }) => {
   );
 };
 
-
-
 const filterList = [
   {
     status: "All"
@@ -297,6 +295,8 @@ const filterList = [
 ]
 
 export default () => {
+
+  //shauna's db
   const [savedStalls, setSavedStalls] = useState([]);
   const [stallsInfo, setStallsInfo] = useState([]);
 
@@ -329,6 +329,8 @@ export default () => {
       );
     }, null, retrieveData);
   }, []);
+  //shauna's db
+
 
   const [filterStatus, setFilterStatus] = useState("All")
   const [dataList, setDataList] = useState(SECTIONS)
@@ -598,6 +600,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     borderRadius: 10,
+    marginLeft: 65,
   },
   filterBtn: {
     width: Dimensions.get('window').width / 5,
