@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 
+import Home from "./screens/Home";
 import NearMe from "./screens/NearMe";
 import ViewAll from "./screens/ViewAll";
 import Saved from "./screens/Saved";
@@ -24,6 +25,25 @@ const CustomTabButton = (props) => (
     }
   />
 );
+
+const NearMeStack = createStackNavigator();
+
+function NearMeStackScreen() {
+  return (
+    <NearMeStack.Navigator>
+      <NearMeStack.Screen
+        options={{ headerShown: false }}
+        name="Home"
+        component={Home}
+      />
+      <NearMeStack.Screen
+        options={{ headerShown: false }}
+        name="NearMe"
+        component={NearMe}
+      />
+    </NearMeStack.Navigator>
+  );
+}
 
 export default function App() {
   return (
@@ -48,7 +68,7 @@ export default function App() {
           },
         })}
         tabBarOptions={{
-          activeTintColor: "#FE8B33",
+          activeTintColor: "#fbaf03",
           inactiveTintColor: "gray",
           labelStyle: {
             fontSize: 12,
@@ -57,7 +77,7 @@ export default function App() {
       >
         <Tab.Screen
           name="NearMe"
-          component={NearMe}
+          component={NearMeStackScreen}
           options={{
             tabBarButton: CustomTabButton,
           }}
@@ -69,13 +89,13 @@ export default function App() {
             tabBarButton: CustomTabButton,
           }}
         />
-        <Tab.Screen
-          name="Saved"
-          component={Saved}
+        {/* <Tab.Screen 
+          name="Saved" 
+          component={Saved} 
           options={{
-            tabBarButton: CustomTabButton,
+          tabBarButton: CustomTabButton,
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Settings"
           component={Settings}
