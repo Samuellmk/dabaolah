@@ -10,6 +10,7 @@ import NearMe from "./screens/NearMe";
 import ViewAll from "./screens/ViewAll";
 import Saved from "./screens/Saved";
 import Settings from "./screens/Settings";
+import Details from "./screens/Details";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -42,6 +43,24 @@ function NearMeStackScreen() {
         component={NearMe}
       />
     </NearMeStack.Navigator>
+  );
+}
+
+const ViewAllStack = createStackNavigator();
+
+function ViewAllStackScreen() {
+  return (
+      <ViewAllStack.Navigator mode="modal">
+        <ViewAllStack.Screen 
+          name="ViewAll" 
+          component={ViewAll} 
+          options={{ headerShown: false }}
+        />
+        <ViewAllStack.Screen 
+          name="Details" 
+          component={Details}
+        />
+      </ViewAllStack.Navigator>
   );
 }
 
@@ -84,7 +103,7 @@ export default function App() {
         />
         <Tab.Screen
           name="ViewAll"
-          component={ViewAll}
+          component={ViewAllStackScreen}
           options={{
             tabBarButton: CustomTabButton,
           }}

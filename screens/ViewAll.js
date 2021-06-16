@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SectionList, SafeAreaView, Image, FlatList, TouchableOpacity, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Divider } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
@@ -58,27 +58,6 @@ async function retrieveData() {
   };
 }
 
-
-const ListItem = ({ item }) => {
-    return (
-    <View style={styles.item}>
-      <Image
-        source={{ uri: item.picture1 }}
-        style={styles.itemPhoto}
-        resizeMode="cover"
-      />
-      <View style={styles.itemTextContainer}>
-        <Text style={styles.itemText} numberOfLines={2}>{item.storeName}</Text>
-        <View style={styles.itemTextContainer2}>
-          <FontAwesome5 style={{ margin: 3 }} name="walking" size={16} color="#363636" />
-          {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
-          <Text style={styles.itemText2}>~15 mins ∙ 1.8km</Text>
-        </View>
-      </View>
-    </View>
-  );
-};
-
 const filterList = [
   {
     status: "All"
@@ -97,7 +76,29 @@ const filterList = [
   }
 ]
 
-export default () => {
+export default function ViewAll({ navigation }) {
+
+  const ListItem = ({ item }) => {
+    return (
+    <View style={styles.item}>
+        <TouchableWithoutFeedback onPress={() => navigation.navigate("Details")}>
+          <Image
+            source={{ uri: item.picture1 }}
+            style={styles.itemPhoto}
+            resizeMode="cover"
+          />
+        </TouchableWithoutFeedback>
+        <View style={styles.itemTextContainer}>
+          <Text style={styles.itemText} numberOfLines={2}>{item.storeName}</Text>
+          <View style={styles.itemTextContainer2}>
+            <FontAwesome5 style={{ margin: 3 }} name="walking" size={16} color="#363636" />
+            {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
+            <Text style={styles.itemText2}>~15 mins ∙ 1.8km</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   //shauna's db
   const [savedStalls, setSavedStalls] = useState([]);
