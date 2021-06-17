@@ -349,7 +349,7 @@ function OurPick(currentCoords, navigation) {
     picture2: "",
     picture3: "",
     storeName: "Sinar Hijrah Muslim Food",
-    duration: "0.8",
+    duration: "7 min",
   };
   return (
     <>
@@ -386,7 +386,7 @@ function OurPick(currentCoords, navigation) {
                 color="#363636"
               />
               <Text style={styles.itemText2}>
-                ~
+                ~7min ∙ 0.8km
                 {Number(
                   (
                     (haversine(currentCoords, pickLocation) / 5) *
