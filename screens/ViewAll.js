@@ -95,7 +95,7 @@ export default function ViewAll({ navigation }) {
     return (
       <View style={styles.item}>
         <TouchableWithoutFeedback
-          onPress={() => navigation.navigate("Details")}
+          onPress={() => navigation.navigate("Details", { item })}
         >
           <Image
             source={{ uri: item.picture1 }}
@@ -115,7 +115,7 @@ export default function ViewAll({ navigation }) {
               color="#363636"
             />
             {/* <Text style={styles.itemText2}>{item.walkingTime} ∙ {item.distance}</Text> */}
-            <Text style={styles.itemText2}>~15 mins ∙ 1.8km</Text>
+            <Text style={styles.itemText2}>~20 mins ∙ 1.8km</Text>
           </View>
         </View>
       </View>

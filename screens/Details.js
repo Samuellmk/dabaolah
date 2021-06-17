@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
+import * as React from "react";
+import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 // import EditScreenInfo from '../components/EditScreenInfo';
 // import { Text, View } from '../components/Themed';
@@ -24,44 +24,61 @@ import { Ionicons } from '@expo/vector-icons';
 //   }
 // ]
 
-export default function Details() {
-        return (
-            <View style={styles.container}>
-              <Text style={styles.title}>Xiang Xiang Traditional Taiwanese Cuisine</Text>
-              <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-              {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
-              <Image style={styles.image} source={require("./sample_pic.jpg")}/>
-              <View style={{flexDirection:"row"}}>
-                <MaterialIcons name="location-on" size={24} color="black" />
-                <Text style={styles.address}>860 River Valley Road</Text>
-              </View>
-              <View style={{flexDirection:"row"}}>
-                <FontAwesome5 name="walking" size={24} color="black" />
-                <Text style={styles.walkingDist}>Walking Time: 10min</Text>
-              </View>
-              <View style={{flexDirection:"row"}}>
-                <Ionicons name="ios-call" size={24} color="black" />
-                <Text style={styles.contact}>Contact Details: 92837167</Text>
-              </View>
-            </View>
-          );
-      }
+export default function Details({ route, navigation }) {
+  const { item } = route.params;
+  console.log(item);
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color="black"
+          style={styles.backArrow}
+          resizeMode="center"
+        />
+      </TouchableOpacity>
+      <View style={styles.container}>
+        <Text style={styles.title}>{item.storeName}</Text>
+        <View
+          style={styles.separator}
+          lightColor="#eee"
+          darkColor="rgba(255,255,255,0.1)"
+        />
+        <Image style={styles.image} source={{ uri: item.picture1 }} />
+        <View style={{ flexDirection: "row" }}>
+          <MaterialIcons name="location-on" size={30} color="black" />
+          <Text style={styles.address}>{item.address}</Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <FontAwesome5 name="walking" size={24} color="black" />
+          <Text style={styles.walkingDist}>
+            Walking Time: {item.duration == null ? "20mins" : item.duration}
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <Ionicons name="ios-call" size={24} color="black" />
+          <Text style={styles.contact}>Contact Details: -</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 10,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   title: {
     // flex: 0.3,
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 50,
     marginRight: 50,
-    marginTop: 100,
-    textAlign: "center"
+    textAlign: "center",
   },
   image: {
     marginTop: 30,
@@ -84,6 +101,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 15,
     marginBottom: 20,
-  }
-
+  },
+  backArrow: {
+    marginLeft: 20,
+    marginTop: 75,
+    fontSize: 30,
+    backgroundColor: "white",
+  },
 });

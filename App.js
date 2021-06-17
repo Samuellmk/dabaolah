@@ -14,6 +14,9 @@ import Details from "./screens/Details";
 
 import { Ionicons } from "@expo/vector-icons";
 
+import { LogBox } from "react-native";
+LogBox.ignoreAllLogs(true);
+
 const Tab = createBottomTabNavigator();
 
 const CustomTabButton = (props) => (
@@ -31,7 +34,7 @@ const NearMeStack = createStackNavigator();
 
 function NearMeStackScreen() {
   return (
-    <NearMeStack.Navigator>
+    <NearMeStack.Navigator mode="modal" headerMode="none">
       <NearMeStack.Screen
         options={{ headerShown: false }}
         name="Home"
@@ -42,6 +45,7 @@ function NearMeStackScreen() {
         name="NearMe"
         component={NearMe}
       />
+      <NearMeStack.Screen name="Details" component={Details} />
     </NearMeStack.Navigator>
   );
 }
@@ -50,17 +54,14 @@ const ViewAllStack = createStackNavigator();
 
 function ViewAllStackScreen() {
   return (
-      <ViewAllStack.Navigator mode="modal" headerMode = "none">
-        <ViewAllStack.Screen 
-          name="ViewAll" 
-          component={ViewAll} 
-          options={{ headerShown: false }}
-        />
-        <ViewAllStack.Screen 
-          name="Details" 
-          component={Details}
-        />
-      </ViewAllStack.Navigator>
+    <ViewAllStack.Navigator mode="modal" headerMode="none">
+      <ViewAllStack.Screen
+        name="ViewAll"
+        component={ViewAll}
+        options={{ headerShown: false }}
+      />
+      <ViewAllStack.Screen name="Details" component={Details} />
+    </ViewAllStack.Navigator>
   );
 }
 
@@ -99,6 +100,7 @@ export default function App() {
           component={NearMeStackScreen}
           options={{
             tabBarButton: CustomTabButton,
+            title: "Near Me",
           }}
         />
         <Tab.Screen
@@ -106,13 +108,14 @@ export default function App() {
           component={ViewAllStackScreen}
           options={{
             tabBarButton: CustomTabButton,
+            title: "View All",
           }}
         />
-        <Tab.Screen 
-          name="Saved" 
-          component={Saved} 
+        <Tab.Screen
+          name="Saved"
+          component={Saved}
           options={{
-          tabBarButton: CustomTabButton,
+            tabBarButton: CustomTabButton,
           }}
         />
         <Tab.Screen

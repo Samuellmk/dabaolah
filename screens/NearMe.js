@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import firebase from "../database/firestoreDB";
 import * as SQLite from "expo-sqlite";
+import { TouchableWithoutFeedback } from "react-native";
 // DB Stuff
 
 const localDB = SQLite.openDatabase("savedStalls.db");
@@ -233,6 +234,37 @@ export default function NearMe({ route, navigation }) {
     setFilterStatus(filterStatus);
   };
 
+  const ListItem = ({ item }) => {
+    return (
+      <View style={styles.item}>
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate("Details", { item })}
+        >
+          <Image
+            source={{ uri: item.picture1 }} // this needs to change to variable item.uri instead to generate different images
+            style={styles.itemPhotoForFlat}
+            resizeMode="cover"
+          />
+        </TouchableWithoutFeedback>
+        <View style={styles.itemTextContainerForFlat}>
+          <Text style={styles.itemText}>{item.storeName}</Text>
+          <View style={styles.itemTextContainer2}>
+            <FontAwesome5
+              style={{ margin: 3 }}
+              name="walking"
+              size={16}
+              color="#363636"
+            />
+            <Text style={styles.itemText2}>~10 mins ∙ 1.1km</Text>
+            {/* <Text style={styles.itemText2}>
+              {item.walkingTime} ∙ {item.distance}
+            </Text> */}
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
       <View style={styles.headerStyle}>
@@ -272,7 +304,7 @@ export default function NearMe({ route, navigation }) {
           <SectionList
             // contentContainerStyle={{ paddingHorizontal:0 }}
             ListHeaderComponent={
-              filterStatus == "All" ? OurPick(currentCoords) : null
+              filterStatus == "All" ? OurPick(currentCoords, navigation) : null
             }
             stickySectionHeadersEnabled={false}
             sections={dataList}
@@ -304,12 +336,21 @@ export default function NearMe({ route, navigation }) {
   );
 }
 
-function OurPick(currentCoords) {
+function OurPick(currentCoords, navigation) {
   const pickLocation = {
     latitude: 1.3509008,
     longitude: 103.720027,
   };
-
+  const item = {
+    address: "Old Airport Hawker Centre",
+    location: 3,
+    picture1:
+      "https://www.mstar.com.my/image/830/553?url=https%3A%2F%2Fclips.mstar.com.my%2Fimages%2Fblob%2F060C5AE0-169F-401F-B0A4-5FE4FF1EA167",
+    picture2: "",
+    picture3: "",
+    storeName: "Sinar Hijrah Muslim Food",
+    duration: "0.8",
+  };
   return (
     <>
       <View style={styles.containerPick}>
@@ -322,11 +363,15 @@ function OurPick(currentCoords) {
               alignItems: "center",
             }}
           >
-            <Image
-              source={{ uri: PICK[0]["data"][0].picture1 }}
-              // source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
-              style={styles.itemPhoto}
-            />
+            <TouchableWithoutFeedback
+              onPress={() => navigation.navigate("Details", { item })}
+            >
+              <Image
+                source={{ uri: PICK[0]["data"][0].picture1 }}
+                // source={require("./sample_pic.jpg")} // this needs to change to variable item.uri instead to generate different images
+                style={styles.itemPhoto}
+              />
+            </TouchableWithoutFeedback>
           </View>
           <View style={styles.itemTextContainer}>
             <Text style={styles.featuredText}>
@@ -343,7 +388,10 @@ function OurPick(currentCoords) {
               <Text style={styles.itemText2}>
                 ~
                 {Number(
-                  (haversine(currentCoords, pickLocation) / 5).toPrecision(2)
+                  (
+                    (haversine(currentCoords, pickLocation) / 5) *
+                    60
+                  ).toPrecision(2)
                 ) + " mins"}{" "}
                 ∙{" "}
                 {Number(haversine(currentCoords, pickLocation).toPrecision(2)) +
@@ -365,33 +413,6 @@ function OurPick(currentCoords) {
     </>
   );
 }
-
-const ListItem = ({ item }) => {
-  return (
-    <View style={styles.item}>
-      <Image
-        source={{ uri: item.picture1 }} // this needs to change to variable item.uri instead to generate different images
-        style={styles.itemPhotoForFlat}
-        resizeMode="cover"
-      />
-      <View style={styles.itemTextContainerForFlat}>
-        <Text style={styles.itemText}>{item.storeName}</Text>
-        <View style={styles.itemTextContainer2}>
-          <FontAwesome5
-            style={{ margin: 3 }}
-            name="walking"
-            size={16}
-            color="#363636"
-          />
-          <Text style={styles.itemText2}>~10 mins ∙ 1.1km</Text>
-          {/* <Text style={styles.itemText2}>
-            {item.walkingTime} ∙ {item.distance}
-          </Text> */}
-        </View>
-      </View>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   headerStyle: {

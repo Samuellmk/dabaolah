@@ -27,37 +27,40 @@ export default function Home({ navigation }) {
   const [currentCoords, setCurrentCoords] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync();
-      setLocation(location);
-
-      setCurrentCoords({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-
-      console.log(location);
-      if (currentCoords !== null) {
-        const readOnlyAddress = await Location.reverseGeocodeAsync(
-          currentCoords
-        );
-        setAddress(readOnlyAddress[0]);
-        if (address.street != null) {
-          onChangeText(address.street);
-        } else {
-          onChangeText("");
+    const interval = setInterval(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
         }
-        console.log("My Street", { text });
-        console.log(currentCoords);
-      }
-    })();
-  }, []);
+
+        let location = await Location.getCurrentPositionAsync();
+        setLocation(location);
+
+        setCurrentCoords({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+
+        //console.log(location);
+        if (currentCoords !== null) {
+          const readOnlyAddress = await Location.reverseGeocodeAsync(
+            currentCoords
+          );
+          setAddress(readOnlyAddress[0]);
+          if (address.street != null) {
+            onChangeText(address.street);
+          } else {
+            onChangeText("");
+          }
+          console.log("My Street", { text });
+          console.log(currentCoords);
+        }
+      })();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [location]);
 
   return (
     <View style={styles.container}>
